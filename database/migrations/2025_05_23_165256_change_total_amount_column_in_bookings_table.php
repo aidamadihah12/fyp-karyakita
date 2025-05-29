@@ -6,23 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->string('total_amount')->change();  // Change total_amount to string
-        });
-    }
+public function up(): void
+{
+    Schema::table('bookings', function (Blueprint $table) {
+        $table->decimal('total_amount', 8, 2); // Add total_amount column
+    });
+}
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->decimal('total_amount', 8, 2)->change();  // Reverse to decimal if needed
-        });
-    }
+public function down(): void
+{
+    Schema::table('bookings', function (Blueprint $table) {
+        $table->dropColumn('total_amount'); // Drop total_amount column
+    });
+}
+
 };

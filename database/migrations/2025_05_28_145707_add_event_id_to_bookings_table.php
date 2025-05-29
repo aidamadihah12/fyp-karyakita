@@ -7,12 +7,11 @@ use Illuminate\Support\Facades\Schema;
 class AddEventIdToBookingsTable extends Migration
 {
     public function up()
-    {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->unsignedBigInteger('event_id')->after('user_id');
-            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
-        });
-    }
+{
+    Schema::table('bookings', function (Blueprint $table) {
+        $table->foreignId('event_id')->constrained()->onDelete('cascade'); // Make sure this is added only once
+    });
+}
 
     public function down()
     {
