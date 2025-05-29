@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 class AddEventIdToBookingsTable extends Migration
 {
-    public function up()
+public function up()
 {
     Schema::table('bookings', function (Blueprint $table) {
-        $table->foreignId('event_id')->constrained()->onDelete('cascade'); // Make sure this is added only once
+        if (!Schema::hasColumn('bookings', 'event_id')) {
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+        }
     });
 }
 
