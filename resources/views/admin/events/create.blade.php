@@ -33,10 +33,23 @@
             <input type="date" id="date" name="date" class="form-control" value="{{ old('date') }}" required>
         </div>
 
+        <!-- Event Price -->
+        <div class="form-group">
+            <label for="price">Event Price (RM)</label>
+            <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" required min="1" step="0.01">
+        </div>
+
         <!-- Available Slots -->
         <div class="form-group">
             <label for="available_slots">Available Slots</label>
-            <input type="number" id="available_slots" name="available_slots" class="form-control" value="{{ old('available_slots') }}" required>
+            <input type="number" id="available_slots" name="available_slots" class="form-control" value="{{ old('available_slots') }}" required min="1">
+        </div>
+
+        <div class="form-group">
+            <label for="basic_package">Package Description</label>
+            <textarea name="basic_package" class="form-control" rows="4" required>
+                {{ old('basic_package', isset($event) ? $event->basic_package : '') }}
+            </textarea>
         </div>
 
         <!-- Event Image -->

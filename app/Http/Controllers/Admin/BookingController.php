@@ -61,8 +61,9 @@ class BookingController extends Controller
     // Show the details of a booking
     public function show($id)
     {
-        $booking = Booking::with('event')->findOrFail($id);
-        return view('admin.bookings.show', compact('booking'));
+         $booking = Booking::with('event')->findOrFail($id);
+    dd($booking);  // Check if total_amount is populated
+    return view('admin.bookings.show', compact('booking'));
     }
 
     // Show the form to edit a booking
@@ -91,7 +92,7 @@ class BookingController extends Controller
             'event_id' => $event->id,
             'event_type' => $event->name,
             'event_date' => $request->event_date,
-            'total_amount' => $event->price,  // Update total amount based on event price
+            'total_amount' => $event->total_amount,  // Update total amount based on event price
             'status' => $request->status,
         ]);
 

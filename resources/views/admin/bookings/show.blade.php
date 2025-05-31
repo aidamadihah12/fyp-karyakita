@@ -16,10 +16,10 @@
         <input type="text" id="event_date" class="form-control" value="{{ \Carbon\Carbon::parse($booking->event_date)->format('Y-m-d') }}" disabled>
     </div>
 
-    <div class="mb-3">
-        <label for="total_amount" class="form-label">Total Amount (RM)</label>
-        <input type="text" id="total_amount" class="form-control" value="{{ number_format($booking->total_amount, 2) }}" disabled>
-    </div>
+<div class="mb-3">
+    <label for="total_amount" class="form-label">Total Amount (RM)</label>
+    <input type="text" id="total_amount" class="form-control" value="{{ number_format($booking->total_amount ?? 0, 2) }}" disabled>
+</div>
 
     <div class="mb-3">
         <label for="status" class="form-label">Status</label>

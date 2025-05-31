@@ -31,13 +31,26 @@
         <!-- Event Date -->
         <div class="form-group">
             <label for="date">Event Date</label>
-            <input name="date" type="date" class="form-control" value="{{ old('date', $event->date) }}" required>
+            <input name="date" type="date" class="form-control" value="{{ old('date', \Carbon\Carbon::parse($event->date)->format('Y-m-d')) }}" required>
+        </div>
+
+        <!-- Event Price -->
+        <div class="form-group">
+            <label for="price">Event Price (RM)</label>
+            <input name="price" type="number" class="form-control" value="{{ old('price', $event->price) }}" step="0.01" required>
         </div>
 
         <!-- Available Slots -->
         <div class="form-group">
             <label for="available_slots">Available Slots</label>
-            <input name="available_slots" type="number" class="form-control" value="{{ old('available_slots', $event->available_slots) }}" required>
+            <input type="number" id="available_slots" name="available_slots" class="form-control" value="{{ old('available_slots') }}" required min="1">
+        </div>
+
+
+        <!-- Package 1: Basic -->
+        <div class="form-group">
+            <label for="basic_package">Package Description</label>
+            <textarea name="basic_package" class="form-control" rows="4" required>{{ old('basic_package', $event->basic_package) }}</textarea>
         </div>
 
         <!-- Current Event Image -->
@@ -46,7 +59,7 @@
             @if($event->image)
                 <img src="{{ asset('storage/' . $event->image) }}" width="100" alt="Event Image">
             @else
-                <span>N/A</span>
+                <span>No image available</span>
             @endif
         </div>
 

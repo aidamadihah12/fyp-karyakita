@@ -6,9 +6,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FreelanceController;
 use App\Http\Controllers\AdminController;
-use Illuminate\Support\Facades\Log;
-
-// Admin resource controllers
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\PaymentController;
@@ -42,13 +39,8 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/calendar', [AdminController::class, 'calendar'])->name('calendar');
 
-    // Event routes
-    Route::resource('events', EventController::class)->except(['create', 'store']);
-    Route::get('events/create', [EventController::class, 'create'])->name('events.create');
-    Route::post('events/store', [EventController::class, 'store'])->name('events.store');
-    Route::get('events/{id}', [EventController::class, 'show'])->name('events.show');
-    Route::get('events/{id}/edit', [EventController::class, 'showUpdateForm'])->name('events.edit');
-    Route::put('events/{id}', [EventController::class, 'update'])->name('events.update');
+    // Event Routes - Resource route covers all the standard event routes
+    Route::resource('events', EventController::class);  // This will automatically generate the required routes, including create, store, edit, update, show, etc.
 
     // Booking routes
     Route::resource('bookings', BookingController::class);
@@ -68,32 +60,8 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/liveview', [LiveViewController::class, 'index'])->name('liveview.index');
     Route::post('/liveview/reset', [LiveViewController::class, 'reset'])->name('liveview.reset');
 
-    Route::get('admin/events/create', function () {
-    return 'Create Event page is working!';
-});
-
-    Route::resource('events', EventController::class)->except(['create', 'store']);  // Exclude 'create' and 'store'
-    Route::get('events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');  // Add the 'edit' route
-    Route::put('events/{id}', [EventController::class, 'update'])->name('events.update');  // Update route
-
-
+    // User routes
     Route::resource('users', UserController::class);
-
-    Route::get('events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');
-
-});
-// In web.php
-
-Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Other routes...
-
-    Route::put('events/{id}', [EventController::class, 'update'])->name('events.update');
-
-      Route::get('events/create', [EventController::class, 'create'])->name('events.create');
-    Route::post('events/store', [EventController::class, 'store'])->name('events.store');
-    // Define the route for editing an event
-    Route::get('events/{id}/edit', [EventController::class, 'edit'])->name('events.edit');  // Route for editing
-    Route::put('events/{id}', [EventController::class, 'update'])->name('events.update'); // Route for updating the event
 });
 
 // ================= STAFF ROUTES =================

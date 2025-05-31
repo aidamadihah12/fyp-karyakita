@@ -3,14 +3,26 @@
 @section('title', 'Manage Bookings')
 
 @section('content')
-    <h1>Manage Bookings</h1>
-    <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary">Add New Booking</a>
+<div class="container">
+    <h2>Manage Bookings</h2>
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <a href="{{ route('admin.bookings.create') }}" class="btn btn-primary mb-3">Add New Booking</a>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Booking ID</th>
-                <th>Event Name</th>
+                <th>Event Type</th>
                 <th>Status</th>
                 <th>Total Amount</th>
                 <th>Event Date</th>
@@ -21,7 +33,7 @@
             @foreach($bookings as $booking)
                 <tr>
                     <td>{{ $booking->id }}</td>
-                    <td>{{ $booking->event->name }}</td>
+                    <td>{{ $booking->event_type }}</td>
                     <td>{{ $booking->status }}</td>
                     <td>{{ number_format($booking->total_amount, 2) }}</td>
                     <td>{{ $booking->event_date }}</td>
@@ -38,4 +50,5 @@
             @endforeach
         </tbody>
     </table>
+</div>
 @endsection

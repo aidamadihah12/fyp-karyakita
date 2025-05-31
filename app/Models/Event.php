@@ -11,8 +11,11 @@ class Event extends Model
 
     // Add the fillable property to define which fields can be mass-assigned
     protected $fillable = [
-        'name', 'date', 'available_slots', 'image'
+        'name', 'date', 'available_slots', 'price', 'image'
     ];
+
+    // Cast 'date' to Carbon instance
+    protected $dates = ['date'];  // This will automatically convert 'date' field to Carbon instance
 
     // Define the relationship between Event and Booking
     public function bookings()

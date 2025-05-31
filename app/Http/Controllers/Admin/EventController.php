@@ -8,57 +8,55 @@ use App\Http\Controllers\Controller;
 
 class EventController extends Controller
 {
-    // List all events with pagination (for admin.events.index)
+    // List all events with pagination
     public function index()
     {
-        $events = Event::latest()->paginate(10);  // Paginate the events to avoid overloading the page
+        $events = Event::latest()->paginate(10);
         return view('admin.events.index', compact('events'));
     }
 
     // Show the form for creating a new event
-public function create()
-{
-    return view('admin.events.create');
-}
-
+    public function create()
+    {
+        return view('admin.events.create');
+    }
 
     // Store a newly created event
-public function store(Request $request)
-{
-    // Validate the form data
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'date' => 'required|date',
-        'available_slots' => 'required|integer|min:1',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    // Create the event
-    $event = Event::create($validated);
-
-    // Handle the image upload
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('events', 'public');
-        $event->image = $imagePath;
-        $event->save();
-    }
-
-    return redirect()->route('admin.events.index')->with('success', 'Event created successfully');
-}
-
-
-
-    // Show the form for editing a single event
-    public function show($id)
+    public function store(Request $request)
     {
-        $event = Event::findOrFail($id);  // Retrieve the event by ID
-        return view('admin.events.show', compact('event'));  // Pass event data to the view
+        // Validate the form data
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'date' => 'required|date',
+            'price' => 'required|integer|min:1',
+            'available_slots' => 'required|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        ]);
+
+        // Create the event
+        $event = Event::create([
+            'name' => $validated['name'],
+            'date' => $validated['date'],
+            'price' => $validated['price'],
+            'available_slots' => $validated['available_slots'],
+        ]);
+
+        // Handle the image upload if present
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('events', 'public');
+            $event->image = $imagePath;
+            $event->save();
+        }
+
+        // Redirect with success message
+        return redirect()->route('admin.events.index')->with('success', 'Event created successfully');
     }
 
     // Show the form for editing a single event
-    public function showUpdateForm($id)
+    public function edit($id)
     {
-        $event = Event::findOrFail($id);
+        // Retrieve the event by ID
+        $event = Event::findOrFail($id);  // Ensure the event exists
         return view('admin.events.edit', compact('event'));
     }
 
@@ -69,8 +67,9 @@ public function store(Request $request)
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'date' => 'required|date',
+        'price' => 'required|integer|min:1',
         'available_slots' => 'required|integer|min:0',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
     // Find the event by ID
@@ -79,10 +78,17 @@ public function store(Request $request)
     // Update the event data
     $event->name = $validated['name'];
     $event->date = $validated['date'];
+    $event->price = $validated['price'];
     $event->available_slots = $validated['available_slots'];
 
-    // If a new image is uploaded, store the new image
+    // Handle the image upload if a new image is uploaded
     if ($request->hasFile('image')) {
+        // Delete the old image if it exists
+        if ($event->image) {
+            \Storage::delete('public/' . $event->image);
+        }
+
+        // Store the new image
         $imagePath = $request->file('image')->store('events', 'public');
         $event->image = $imagePath;
     }
@@ -90,46 +96,28 @@ public function store(Request $request)
     // Save the updated event
     $event->save();
 
-    // Redirect back with success message
-    return redirect()->route('admin.events.index')->with('success', 'Event updated successfully.');
+    // Redirect with success message
+    return redirect()->route('admin.events.index')->with('success', 'Event updated successfully');
 }
 
-
-    // ✅ Bulk update all events at once
-    public function bulkUpdate(Request $request)
-    {
-        $validatedData = $request->validate([
-            'events.*.name' => 'required|string|max:255',
-            'events.*.date' => 'required|date',
-            'events.*.available_slots' => 'required|integer|min:0',
-            'events.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        foreach ($validatedData['events'] as $id => $data) {
-            $event = Event::findOrFail($id);
-
-            $event->name = $data['name'];
-            $event->date = $data['date'];
-            $event->available_slots = $data['available_slots'];
-
-            if (isset($data['image'])) {
-                // Handle image upload
-                $path = $data['image']->store('events', 'public');
-                $event->image = $path;
-            }
-
-            $event->save();
-        }
-
-        return redirect()->route('admin.events.index')->with('success', 'Events updated successfully.');
-    }
-
-       public function edit($id)
+    // Show the details of a single event
+    public function show($id)
     {
         // Retrieve the event by ID
+        $event = Event::findOrFail($id);  // Ensure the event exists
+
+        // Return the event details view and pass the event data
+        return view('admin.events.show', compact('event'));
+    }
+        public function destroy($id)
+    {
+        // Find the event by ID
         $event = Event::findOrFail($id);
 
-     // Return the edit view and pass the event data
-    return view('admin.events.edit', compact('event'));
+        // Delete the event
+        $event->delete();
+
+        // Redirect back to the events index page with a success message
+        return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully');
     }
 }
