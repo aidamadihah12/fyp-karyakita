@@ -10,14 +10,14 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->string('event_type');
-            $table->foreignId('assigned_staff')->constrained()->onDelete('cascade');
-            $table->timestamps(); // This will create both created_at and updated_at automatically
+            $table->foreignId('assigned_staff_id')->nullable()->constrained('users')->onDelete('set null');
             $table->enum('status', ['Pending', 'Confirmed', 'Completed', 'Cancelled'])->default('Pending');
             $table->decimal('total_amount', 8, 2);
             $table->date('event_date');
+            $table->timestamps();
         });
     }
 
@@ -26,4 +26,3 @@ class CreateBookingsTable extends Migration
         Schema::dropIfExists('bookings');
     }
 }
-

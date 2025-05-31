@@ -8,10 +8,11 @@ class AddUserIdToBookingsTable extends Migration
 {
 public function up()
 {
-    Schema::table('bookings', function (Blueprint $table) {
-        $table->unsignedBigInteger('user_id')->nullable();  // Add user_id field
-        $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');  // Foreign key to users table
-    });
+    if (!Schema::hasColumn('bookings', 'user_id')) {
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+        });
+    }
 }
 
 public function down()

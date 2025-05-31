@@ -8,9 +8,11 @@ class AddEventDateToBookingsTable extends Migration
 {
 public function up()
 {
-    Schema::table('bookings', function (Blueprint $table) {
-        $table->date('event_date')->nullable();
-    });
+    if (!Schema::hasColumn('bookings', 'event_date')) {
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->date('event_date')->nullable();
+        });
+    }
 }
 
 

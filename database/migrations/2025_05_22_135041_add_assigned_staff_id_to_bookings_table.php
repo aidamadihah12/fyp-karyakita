@@ -9,13 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-    Schema::table('bookings', function (Blueprint $table) {
-        $table->unsignedBigInteger('assigned_staff_id')->nullable()->after('id'); // Adjust position if needed
-        $table->foreign('assigned_staff_id')->references('id')->on('users')->onDelete('set null');
-    });
+public function up()
+{
+    if (!Schema::hasColumn('bookings', 'assigned_staff_id')) {
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->foreignId('assigned_staff_id')->nullable()->constrained('users')->onDelete('set null');
+        });
     }
+}
 
     /**
      * Reverse the migrations.

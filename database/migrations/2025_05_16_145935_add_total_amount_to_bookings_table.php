@@ -8,10 +8,11 @@ return new class extends Migration
 {
     public function up()
 {
-    Schema::table('bookings', function (Blueprint $table) {
-        // Add total_amount column (if it doesn't exist)
-        $table->decimal('total_amount', 8, 2)->nullable();  // Example for decimal with 2 decimal places
-    });
+    if (!Schema::hasColumn('bookings', 'total_amount')) {
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->decimal('total_amount', 8, 2)->nullable();
+        });
+    }
 }
 
 public function down()

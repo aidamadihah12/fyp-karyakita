@@ -8,9 +8,11 @@ return new class extends Migration
 {
 public function up()
 {
-    Schema::table('events', function (Blueprint $table) {
-        $table->date('date'); // omit after('name')
-    });
+    if (!Schema::hasColumn('events', 'date')) {
+        Schema::table('events', function (Blueprint $table) {
+            $table->date('date');
+        });
+    }
 }
 
 public function down()
