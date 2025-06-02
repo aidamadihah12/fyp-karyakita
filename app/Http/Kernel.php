@@ -39,9 +39,9 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // Add Sanctum middleware for API
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':api', // API throttle
+            \Illuminate\Routing\Middleware\SubstituteBindings::class, // Route model binding
         ],
     ];
 
@@ -67,5 +67,5 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
-
 }
+
