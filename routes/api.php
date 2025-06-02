@@ -3,6 +3,10 @@
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\RestController;
+
+Route::resource('person', RestController::class);
+
 
 // Authentication Routes
 Route::post('register', [AuthController::class, 'register']);
