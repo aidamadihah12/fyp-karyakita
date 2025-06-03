@@ -45,15 +45,15 @@
     <div class="content-area">
 
         <!-- Sidebar menu -->
-        <nav class="sidebar">
-            <a href="{{ route('staff.bookings') }}" class="{{ request()->routeIs('staff.bookings*') ? 'active' : '' }}">Manage Booking</a>
-            <a href="{{ route('staff.inquiries') }}" class="{{ request()->routeIs('staff.inquiries*') ? 'active' : '' }}">Client Inquiries</a>
-            <a href="{{ route('staff.notifications.form') }}" class="{{ request()->routeIs('staff.notifications.*') ? 'active' : '' }}">Send Notification</a>
-            <a href="{{ route('staff.liveview') }}" class="{{ request()->routeIs('staff.liveview') ? 'active' : '' }}">Live View</a>
-            <a href="{{ route('staff.calendar') }}" class="{{ request()->routeIs('staff.calendar') ? 'active' : '' }}">Calendar</a>
+<nav class="sidebar">
+    <a href="{{ route('staff.bookings') }}" class="{{ request()->routeIs('staff.bookings*') ? 'active' : '' }}">Manage Booking</a>
+    <a href="{{ route('staff.inquiries') }}" class="{{ request()->routeIs('staff.inquiries*') ? 'active' : '' }}">Client Inquiries</a>
+    <a href="{{ route('staff.notifications.form') }}" class="{{ request()->routeIs('staff.notifications.*') ? 'active' : '' }}">Send Notification</a>
+    <a href="{{ route('staff.liveview') }}" class="{{ request()->routeIs('staff.liveview') ? 'active' : '' }}">Live View</a>
+    <a href="{{ route('staff.calendar') }}" class="{{ request()->routeIs('staff.calendar') ? 'active' : '' }}">Calendar</a>
+    <a href="{{ route('staff.venues.index') }}" class="{{ request()->routeIs('staff.venues.*') ? 'active' : '' }}">Venues Listing</a>
+</nav>
 
-
-        </nav>
 
         <!-- Main content -->
         <main class="main-content">

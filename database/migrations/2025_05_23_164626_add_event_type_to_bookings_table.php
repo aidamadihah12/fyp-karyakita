@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('events', function (Blueprint $table) {
             // Check if the 'date' column doesn't already exist before adding it
             if (!Schema::hasColumn('events', 'date')) {
-                $table->date('date')->notNull();  // Add the 'date' column
+                $table->date('date')->nullable();  // Add the 'date' column
             }
         });
     }
