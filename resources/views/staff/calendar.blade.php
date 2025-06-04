@@ -1,7 +1,7 @@
 @extends('layouts.staff')
 
 @section('content')
-    <h2 class="mb-4">Staff Calendar</h2>
+    <h2 class="mb-4">Calendar Schedule</h2>
     <div id="calendar"></div>
 
     <!-- FullCalendar CSS & JS -->
@@ -15,7 +15,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 height: 650,
-                events: @json($events),
+                events: @json($events), // ✅
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',

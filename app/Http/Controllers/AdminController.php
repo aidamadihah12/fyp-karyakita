@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Models\Assignment;
+
 
 class AdminController extends Controller
 {
@@ -177,5 +179,28 @@ class AdminController extends Controller
 
         return view('admin.bookings.show', compact('booking'));
     }
+
+    public function showAssignments()
+{
+    $assignments = Assignment::with('freelancer')->paginate(10);
+    $freelancers = User::where('role', 'Freelance')->get();
+
+    return view('admin.assignments.index', compact('assignments', 'freelancers'));
+}
+
+public function assignFreelancer(Request $request, $assignmentId)
+{
+    $request->validate([
+        'freelancer_id' => 'required|exists:users,id',
+    ]);
+
+    $assignment = Assignment::findOrFail($assignmentId);
+    $assignment->freelancer_id = $request->freelancer_id;
+    $assignment->status = 'assigned'; // optional: update status
+    $assignment->save();
+
+    return redirect()->back()->with('success', 'Freelance photographer assigned successfully.');
+}
+
 
 }

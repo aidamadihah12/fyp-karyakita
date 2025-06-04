@@ -1,60 +1,43 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Booking')
+@section('title', 'Booking Details')
 
 @section('content')
 <div class="container">
-    <h2>Edit Booking #{{ $booking->id }}</h2>
+    <h2>Booking Details</h2>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <table class="table table-bordered">
+        <tr>
+            <th>Booking ID</th>
+            <td>{{ $booking->id }}</td>
+        </tr>
+        <tr>
+            <th>Customer</th>
+            <td>{{ $booking->customer->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Venue</th>
+            <td>{{ $booking->venue->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td>{{ \Carbon\Carbon::parse($booking->date)->format('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>Time</th>
+            <td>{{ $booking->time }}</td>
+        </tr>
+        <tr>
+            <th>Package</th>
+            <td>{{ $booking->package }}</td>
+        </tr>
+        <tr>
+            <th>Note</th>
+            <td>{{ $booking->note }}</td>
+        </tr>
+    </table>
 
-    <form action="{{ route('admin.bookings.update', $booking->id) }}" method="POST">
-        @csrf
-        @method('PUT')
-
-        <div class="form-group">
-            <label for="event_id">Select Event</label>
-            <select name="event_id" id="event_id" class="form-control" required>
-                <option value="">-- Select Event --</option>
-                @foreach ($events as $event)
-                    <option value="{{ $event->id }}" {{ $booking->event_id == $event->id ? 'selected' : '' }}>
-                        {{ $event->name }} - RM{{ number_format($event->price, 2) }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="event_date">Event Date</label>
-            <input type="date" name="event_date" id="event_date" class="form-control"
-                   value="{{ old('event_date', $booking->event_date) }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="total_amount">Total Amount (RM)</label>
-            <input type="number" name="total_amount" id="total_amount" class="form-control"
-                   value="{{ old('total_amount', $booking->total_amount) }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control" required>
-                <option value="Pending" {{ old('status', $booking->status) == 'Pending' ? 'selected' : '' }}>Pending</option>
-                <option value="Confirmed" {{ old('status', $booking->status) == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
-                <option value="Completed" {{ old('status', $booking->status) == 'Completed' ? 'selected' : '' }}>Completed</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-success">Update Booking</button>
-        <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary ms-2">Cancel</a>
-    </form>
+    <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-warning">Edit</a>
+    <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Back to List</a>
 </div>
 @endsection

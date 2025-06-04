@@ -6,23 +6,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FreelanceController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Admin\VenueController;
-
-// Admin sub-controllers
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\PaymentController;
-use App\Http\Controllers\Admin\EventController;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\ProfitController;
-use App\Http\Controllers\Admin\SystemTestController;
-use App\Http\Controllers\Admin\LiveViewController;
 use App\Http\Controllers\Admin\VenueController as AdminVenueController;
-
-// Staff venue controller
 use App\Http\Controllers\Staff\VenueController as StaffVenueController;
+use App\Http\Controllers\AssignmentController;
 
 // ================= PUBLIC & AUTH ROUTES =================
+
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication Routes
@@ -41,79 +31,87 @@ Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])-
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 
+
 // ================= ADMIN ROUTES =================
+
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/calendar', [AdminController::class, 'calendar'])->name('calendar');
 
-    // Resources
-    Route::resource('events', EventController::class);
-    Route::resource('bookings', BookingController::class);
-    Route::resource('payments', PaymentController::class)->only(['index', 'show']);
-    Route::resource('users', UserController::class);
-    Route::resource('venues', AdminVenueController::class)->except(['show']);
+    Route::resource('events', \App\Http\Controllers\Admin\EventController::class);
+    Route::resource('bookings', \App\Http\Controllers\Admin\BookingController::class);
+    Route::resource('payments', \App\Http\Controllers\Admin\PaymentController::class)->only(['index', 'show']);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::resource('venues', AdminVenueController::class);
 
+    Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports');
+    Route::get('profit-analytics', [\App\Http\Controllers\Admin\ProfitController::class, 'index'])->name('profit.analytics');
 
-    //Venue Listing
-    Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
-    Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
-    Route::resource('venues', VenueController::class);
+    Route::get('system-testing', [\App\Http\Controllers\Admin\SystemTestController::class, 'index'])->name('system.testing');
+    Route::post('system-testing/run', [\App\Http\Controllers\Admin\SystemTestController::class, 'runTests'])->name('system.testing.run');
 
-    // Reports, Profit, System Testing
-    Route::get('reports', [ReportController::class, 'index'])->name('reports');
-    Route::get('profit-analytics', [ProfitController::class, 'index'])->name('profit.analytics');
-    Route::get('system-testing', [SystemTestController::class, 'index'])->name('system.testing');
-    Route::post('system-testing/run', [SystemTestController::class, 'runTests'])->name('system.testing.run');
+    Route::get('/liveview', [\App\Http\Controllers\Admin\LiveViewController::class, 'index'])->name('liveview.index');
+    Route::post('/liveview/reset', [\App\Http\Controllers\Admin\LiveViewController::class, 'reset'])->name('liveview.reset');
 
-    // Live view
-    Route::get('/liveview', [LiveViewController::class, 'index'])->name('liveview.index');
-    Route::post('/liveview/reset', [LiveViewController::class, 'reset'])->name('liveview.reset');
+     Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
+    Route::post('assignments', [AssignmentController::class, 'store'])->name('assignments.store');
+    Route::get('assignments/{assignment}/edit', [AssignmentController::class, 'edit'])->name('assignments.edit');
+    Route::put('assignments/{assignment}', [AssignmentController::class, 'update'])->name('assignments.update');
+    Route::delete('assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('assignments.destroy');
+
+    Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');  // List events + assign
+    Route::post('/assignments/assign', [AssignmentController::class, 'assign'])->name('assignments.assign');  // Handle assignment form
+    
 });
 
 
 // ================= STAFF ROUTES =================
+
 Route::middleware(['auth', 'role:Staff'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffController::class, 'dashboard'])->name('dashboard');
     Route::get('/calendar', [StaffController::class, 'calendar'])->name('calendar');
 
-    // Bookings
     Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/{id}/edit', [StaffController::class, 'editBooking'])->name('bookings.edit');
     Route::put('/bookings/{id}', [StaffController::class, 'updateBooking'])->name('bookings.update');
 
-    // Inquiries
     Route::get('/inquiries', [StaffController::class, 'inquiries'])->name('inquiries');
     Route::get('/inquiries/{id}', [StaffController::class, 'showInquiry'])->name('inquiries.show');
 
-    // Notifications
     Route::get('/notifications/send', [StaffController::class, 'notificationForm'])->name('notifications.form');
     Route::post('/notifications/send', [StaffController::class, 'sendNotification'])->name('notifications.send');
 
-    // Live view
     Route::get('/live-view', [StaffController::class, 'liveView'])->name('liveview');
 
-    // Venue (read and edit only)
-    Route::get('/venues', [StaffVenueController::class, 'index'])->name('venues.index');
-    Route::get('/venues/{id}/edit', [StaffVenueController::class, 'edit'])->name('venues.edit');
-    Route::put('/venues/{id}', [StaffVenueController::class, 'update'])->name('venues.update');
+    Route::resource('venues', StaffVenueController::class);
+
 });
 
 
 // ================= FREELANCE ROUTES =================
+
 Route::middleware(['auth', 'role:Freelance'])->prefix('freelance')->name('freelance.')->group(function () {
     Route::get('/dashboard', [FreelanceController::class, 'dashboard'])->name('dashboard');
     Route::get('/calendar', [FreelanceController::class, 'calendar'])->name('calendar');
 
-    // Media upload
-    Route::post('freelance/upload-media', [FreelanceController::class, 'uploadMedia'])->name('freelance.upload.media');
-    Route::get('/upload-media', [FreelanceController::class, 'uploadMediaForm'])->name('upload.media.form');
-    Route::post('/upload-media', [FreelanceController::class, 'uploadMedia'])->name('upload.media');
-
     // Availability
-    Route::get('/availability/edit', [FreelanceController::class, 'editAvailability'])->name('availability.edit');
-    Route::post('/availability/update', [FreelanceController::class, 'updateAvailability'])->name('availability.update');
+    Route::get('/availability', [FreelanceController::class, 'editAvailability'])->name('availability.edit');
+    Route::post('/availability', [FreelanceController::class, 'updateAvailability'])->name('availability.update');
 
     // Assignments
     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
-    Route::post('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
+    Route::post('/assignments/accept/{id}', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
+
+        // Route to show the media upload form
+    Route::get('/media/upload', [App\Http\Controllers\FreelanceController::class, 'showUploadForm'])
+        ->name('upload.media.form');
+
+    // Route to handle media upload POST
+    Route::post('/media/upload', [App\Http\Controllers\FreelanceController::class, 'uploadMedia'])
+        ->name('upload.media.submit');
+
+     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
+
+    Route::patch('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
 });

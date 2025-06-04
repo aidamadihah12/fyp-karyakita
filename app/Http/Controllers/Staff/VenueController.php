@@ -14,6 +14,42 @@ class VenueController extends Controller
         return view('staff.venues.index', compact('venues'));
     }
 
+    public function create()
+    {
+        return view('staff.venues.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'location' => 'required|string',
+            'location_url' => 'nullable|url',
+            'package_type' => 'required|string',
+            'event_type' => 'required|string',
+            'available_date' => 'required|date',
+            'price' => 'required|numeric|min:0',
+            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($request->hasFile('sample_photo')) {
+            $filename = time() . '.' . $request->sample_photo->extension();
+            $request->sample_photo->move(public_path('uploads'), $filename);
+            $validated['sample_photo'] = $filename;
+        }
+
+        Venue::create($validated);
+
+        return redirect()->route('staff.venues.index')->with('success', 'Venue created successfully.');
+    }
+
+    public function show($id)
+    {
+        $venue = Venue::findOrFail($id);
+        return view('staff.venues.show', compact('venue'));
+    }
+
     public function edit($id)
     {
         $venue = Venue::findOrFail($id);
@@ -28,14 +64,20 @@ class VenueController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'location' => 'required|string',
+            'location_url' => 'nullable|url',
             'package_type' => 'required|string',
             'event_type' => 'required|string',
             'available_date' => 'required|date',
-            'price' => 'required|numeric',
-            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg'
+            'price' => 'required|numeric|min:0',
+            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($request->hasFile('sample_photo')) {
+            // Optional: Delete old photo if exists
+            if ($venue->sample_photo && file_exists(public_path('uploads/' . $venue->sample_photo))) {
+                unlink(public_path('uploads/' . $venue->sample_photo));
+            }
+
             $filename = time() . '.' . $request->sample_photo->extension();
             $request->sample_photo->move(public_path('uploads'), $filename);
             $validated['sample_photo'] = $filename;
@@ -44,5 +86,19 @@ class VenueController extends Controller
         $venue->update($validated);
 
         return redirect()->route('staff.venues.index')->with('success', 'Venue updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $venue = Venue::findOrFail($id);
+
+        // Delete image if exists
+        if ($venue->sample_photo && file_exists(public_path('uploads/' . $venue->sample_photo))) {
+            unlink(public_path('uploads/' . $venue->sample_photo));
+        }
+
+        $venue->delete();
+
+        return redirect()->route('staff.venues.index')->with('success', 'Venue deleted successfully.');
     }
 }

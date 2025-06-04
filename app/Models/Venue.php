@@ -18,5 +18,6 @@ class Venue extends Model
         'available_date',
         'price',
         'sample_photo',
+        'location_url',
     ];
 }

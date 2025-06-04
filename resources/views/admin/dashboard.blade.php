@@ -86,7 +86,8 @@
     <!-- Content area -->
     <div class="content-area">
 
-        <!-- Sidebar -->
+
+<!-- Sidebar -->
 <nav class="sidebar">
     <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Home</a>
     <a href="{{ route('admin.bookings.index') }}" class="{{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">Manage Bookings</a>
@@ -99,12 +100,13 @@
     <a href="{{ route('admin.system.testing') }}" class="{{ request()->routeIs('admin.system.testing') ? 'active' : '' }}">System Testing</a>
     <a href="{{ route('admin.liveview.index') }}" class="{{ request()->routeIs('admin.liveview.*') ? 'active' : '' }}">Live View</a>
     <a href="{{ route('admin.calendar') }}" class="{{ request()->routeIs('admin.calendar') ? 'active' : '' }}">📅 Calendar</a>
+    <a href="{{ route('admin.assignments.index') }}" class="{{ request()->routeIs('admin.assignments.*') ? 'active' : '' }}">📸 Assign Photographer</a>
 </nav>
 
 
         <!-- Main dashboard content -->
         <main class="main-content">
-            <h2 class="mb-4">Admin</h2>
+            <h2 class="mb-4">Admin Dashboard</h2>
 
             <!-- Metrics Cards -->
             <div class="row g-3 mb-4">
@@ -174,31 +176,28 @@
                         </thead>
                         <tbody>
                             @forelse($recentBookings as $booking)
-                            <tr>
-                                <td>{{ $booking->id }}</td>
-                                <td>{{ optional($booking->user)->full_name ?? 'N/A' }}</td>
-                                <td>{{ $booking->event_type }}</td>
-                                <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
-                                <td>
-                                    <span class="badge
-                                        @if($booking->status == 'Pending') bg-warning
-                                        @elseif($booking->status == 'Confirmed') bg-success
-                                        @else bg-secondary
-                                        @endif">
-                                        {{ $booking->status }}
-                                    </span>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td>{{ $booking->id }}</td>
+                                    <td>{{ optional($booking->user)->full_name ?? 'N/A' }}</td>
+                                    <td>{{ $booking->event_type }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
+                                    <td>
+                                        <span class="badge
+                                            @if($booking->status == 'Pending') bg-warning
+                                            @elseif($booking->status == 'Confirmed') bg-success
+                                            @else bg-secondary
+                                            @endif">
+                                            {{ $booking->status }}
+                                        </span>
+                                    </td>
+                                </tr>
                             @empty
-                            <tr><td colspan="5" class="text-center">No recent bookings found.</td></tr>
+                                <tr><td colspan="5" class="text-center">No recent bookings found.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            {{-- Future profit analytics chart placeholder --}}
-            {{-- <div id="profit-chart" style="height: 300px;"></div> --}}
         </main>
 
     </div>

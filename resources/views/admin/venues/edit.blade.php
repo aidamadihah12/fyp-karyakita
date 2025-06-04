@@ -30,6 +30,11 @@
         </div>
 
         <div class="mb-3">
+            <label>Location URL</label>
+            <input type="url" name="location_url" class="form-control" value="{{ old('location_url', $venue->location_url) }}">
+        </div>
+
+        <div class="mb-3">
             <label>Package Type</label>
             <input type="text" name="package_type" class="form-control" value="{{ old('package_type', $venue->package_type) }}">
         </div>

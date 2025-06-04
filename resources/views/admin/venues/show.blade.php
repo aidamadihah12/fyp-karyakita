@@ -10,6 +10,11 @@
 
     <p><strong>Description:</strong> {{ $venue->description }}</p>
     <p><strong>Location:</strong> {{ $venue->location }}</p>
+
+    @if($venue->location_url)
+        <p><strong>Location URL:</strong> <a href="{{ $venue->location_url }}" target="_blank">{{ $venue->location_url }}</a></p>
+    @endif
+
     <p><strong>Event Type:</strong> {{ $venue->event_type }}</p>
     <p><strong>Package Type:</strong> {{ $venue->package_type }}</p>
     <p><strong>Available Date:</strong> {{ $venue->available_date }}</p>

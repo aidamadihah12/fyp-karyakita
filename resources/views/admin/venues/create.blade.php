@@ -29,6 +29,11 @@
         </div>
 
         <div class="mb-3">
+            <label>Location URL</label>
+            <input type="url" name="location_url" class="form-control" placeholder="https://maps.google.com/..." value="{{ old('location_url') }}">
+        </div>
+
+        <div class="mb-3">
             <label>Package Type</label>
             <input type="text" name="package_type" class="form-control" required value="{{ old('package_type') }}">
         </div>

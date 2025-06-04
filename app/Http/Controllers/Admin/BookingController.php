@@ -2,109 +2,168 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Event;
+use App\Models\User;
+use App\Models\Venue;
+use App\Models\Customer;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\AssignmentNotification;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
-    // Display all bookings
+    // Display all bookings with pagination
     public function index()
     {
-        $bookings = Booking::with('event')->get();  // Get all bookings with their associated events
+        // Use 'customer' relationship instead of 'user'
+        $bookings = Booking::with(['event', 'customer', 'freelancer', 'venue'])
+            ->latest()
+            ->paginate(10);
+
         return view('admin.bookings.index', compact('bookings'));
     }
 
-    // Show the form to create a new booking
-    public function create()
-    {
-        $events = Event::all(); // Fetch all events for the select dropdown
-        return view('admin.bookings.create', compact('events'));
-    }
-
-    // Store a new booking
-    public function store(Request $request)
+public function create()
 {
-    // Validate the form input
-    $request->validate([
-        'event_id' => 'required|exists:events,id', // Ensure event_id exists in the events table
-        'event_date' => 'required|date',
-        'status' => 'required|string|in:Pending,Confirmed,Completed',
-    ]);
+    $events = Event::all();
+    $customers = User::where('user_role', 'customer')->get(); // Only customers
+    $venues = Venue::all();
 
-    // Retrieve the event by ID
-    $event = Event::findOrFail($request->event_id);
-
-    // Ensure the user is authenticated
-    $user_id = auth()->id();  // Get the ID of the currently logged-in user
-
-    // Ensure the event has a price
-    if ($event->price === null) {
-        return redirect()->back()->with('error', 'The selected event does not have a valid price.');
-    }
-
-    // Create the new booking and include the user_id and event price
-    Booking::create([
-        'user_id' => $user_id,   // Add the user_id here
-        'event_id' => $event->id,
-        'event_type' => $event->name,
-        'event_date' => $request->event_date,
-        'total_amount' => $event->price,  // Use the event price here
-        'status' => $request->status,
-    ]);
-
-    // Redirect back to the booking index with success message
-    return redirect()->route('admin.bookings.index')->with('success', 'Booking created successfully');
+    return view('admin.bookings.create', compact('events', 'customers', 'venues'));
 }
 
-    // Show the details of a booking
-    public function show($id)
+
+
+    // Store new booking
+    public function store(Request $request)
     {
-         $booking = Booking::with('event')->findOrFail($id);
-    dd($booking);  // Check if total_amount is populated
-    return view('admin.bookings.show', compact('booking'));
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'event_id' => 'required|exists:events,id',
+            'venue_id' => 'nullable|exists:venues,id',
+            'event_date' => 'required|date',
+            'status' => 'required|string|in:Pending,Confirmed,Completed',
+            'note' => 'nullable|string',
+        ]);
+
+        $event = Event::findOrFail($validated['event_id']);
+
+        $booking = Booking::create([
+            'customer_id' => $validated['user_id'],  // Make sure Booking model uses customer_id
+            'event_id' => $event->id,
+            'venue_id' => $validated['venue_id'] ?? null,
+            'date' => $validated['event_date'],
+            'status' => $validated['status'],
+            'note' => $validated['note'] ?? null,
+            'total_amount' => $event->price,
+        ]);
+
+        Log::info('Booking created', $booking->toArray());
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Booking created successfully.');
     }
 
-    // Show the form to edit a booking
+    // Show single booking details
+    public function show($id)
+    {
+        $booking = Booking::with(['event', 'customer', 'freelancer', 'venue'])->findOrFail($id);
+
+        return view('admin.bookings.show', compact('booking'));
+    }
+
+    // Show edit form
     public function edit($id)
     {
         $booking = Booking::findOrFail($id);
-        $events = Event::all(); // Fetch all events
-        return view('admin.bookings.edit', compact('booking', 'events'));
+        $events = Event::all();
+        $users = User::all();
+        $venues = Venue::all();
+
+        return view('admin.bookings.edit', compact('booking', 'events', 'users', 'venues'));
     }
 
-    // Update the booking
+    // Update booking
     public function update(Request $request, $id)
     {
-        // Validate the form input
-        $request->validate([
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
+            'venue_id' => 'nullable|exists:venues,id',
             'event_date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed',
+            'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
+            'note' => 'nullable|string',
         ]);
 
         $booking = Booking::findOrFail($id);
-        $event = Event::findOrFail($request->event_id);
+        $event = Event::findOrFail($validated['event_id']);
 
-        // Update the booking
         $booking->update([
+            'customer_id' => $validated['user_id'],
             'event_id' => $event->id,
-            'event_type' => $event->name,
-            'event_date' => $request->event_date,
-            'total_amount' => $event->total_amount,  // Update total amount based on event price
-            'status' => $request->status,
+            'venue_id' => $validated['venue_id'] ?? null,
+            'date' => $validated['event_date'],
+            'status' => $validated['status'],
+            'note' => $validated['note'] ?? null,
+            'total_amount' => $event->price,
         ]);
 
-        return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully');
+        Log::info('Booking updated', $booking->toArray());
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully.');
     }
 
-    // Delete a booking
+    // Delete booking
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
         $booking->delete();
 
-        return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully');
+        Log::info('Booking deleted', ['booking_id' => $id]);
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Booking deleted successfully.');
+    }
+
+    // Show form to assign a freelancer photographer to booking
+    public function assignForm($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $freelancers = User::where('user_role', 'freelance')->get();
+
+        return view('admin.bookings.assign', compact('booking', 'freelancers'));
+    }
+
+    // Store assignment of freelancer photographer
+    public function assignStore(Request $request, $id)
+    {
+        $request->validate([
+            'freelancer_id' => 'required|exists:users,id',
+        ]);
+
+        $booking = Booking::findOrFail($id);
+        $booking->freelancer_id = $request->freelancer_id;
+        $booking->status = 'Assigned';
+        $booking->save();
+
+        // Notify the freelancer
+        Notification::route('mail', $booking->freelancer->email)
+            ->notify(new AssignmentNotification($booking));
+
+        Log::info('Freelancer assigned', [
+            'booking_id' => $booking->id,
+            'freelancer_id' => $booking->freelancer_id,
+        ]);
+
+        return redirect()->route('admin.bookings.index')->with('success', 'Photographer assigned successfully.');
+    }
+
+    // List bookings with assigned freelancers
+    public function showAssignmentList()
+    {
+        $bookings = Booking::with('freelancer')->whereNotNull('freelancer_id')->latest()->paginate(10);
+
+        return view('admin.bookings.assignment-list', compact('bookings'));
     }
 }

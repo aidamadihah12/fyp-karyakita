@@ -4,49 +4,54 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Event;
+use App\Models\Venue;
 
 class Booking extends Model
 {
     use HasFactory;
 
-    // Define the table name (optional if the table name follows Laravel's convention)
     protected $table = 'bookings';
 
-    // Fillable fields for mass assignment
     protected $fillable = [
-        'user_id',        // The user who made the booking
-        'event_id',       // The related event for this booking
-        'event_type',     // Event Type (e.g. Wedding, Conference, etc.)
-        'event_date',     // The date of the event
-        'total_amount',   // Total amount for the event booking
-        'status',         // Booking status (Pending, Confirmed, Completed)
-        'freelancer_id',  // Freelancer assigned to the booking (optional)
-    ];
-
-    // Automatically cast event_date to Carbon (date object)
-    protected $casts = [
-        'event_date' => 'date',  // Ensure event_date is handled as a Carbon date object
+        'customer_id',  // foreign key pointing to users table
+        'venue_id',
+        'event_id',
+        'freelancer_id',
+        'date',
+        'time',
+        'package',
+        'note',
+        'status',
+        'total_amount'
     ];
 
     // Relationships
 
-    // Define the relation with the User model (who made the booking)
-    public function user()
+    public function customer()
     {
-        return $this->belongsTo(User::class, 'user_id'); // Belongs to User model
+        // customer_id references users table
+        return $this->belongsTo(User::class, 'customer_id');
     }
 
-    // Define the relation with the Freelancer (who is assigned to the booking)
-    public function freelancer()
+    public function venue()
     {
-        return $this->belongsTo(User::class, 'freelancer_id'); // Belongs to the freelancer (a user)
+        return $this->belongsTo(Venue::class, 'venue_id');
     }
 
-    // Define the relation with the Event model (related event for this booking)
     public function event()
     {
-        return $this->belongsTo(Event::class); // Belongs to Event model
+        return $this->belongsTo(Event::class, 'event_id');
     }
 
-    // Optional: You can define additional methods if needed
+    public function freelancer()
+    {
+        return $this->belongsTo(User::class, 'freelancer_id');
+    }
+
+        public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

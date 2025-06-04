@@ -8,17 +8,26 @@ use App\Models\Venue;
 
 class VenueController extends Controller
 {
+    /**
+     * Display a listing of the venues.
+     */
     public function index()
     {
         $venues = Venue::latest()->paginate(10);
         return view('admin.venues.index', compact('venues'));
     }
 
+    /**
+     * Show the form for creating a new venue.
+     */
     public function create()
     {
         return view('admin.venues.create');
     }
 
+    /**
+     * Store a newly created venue in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -29,7 +38,8 @@ class VenueController extends Controller
             'event_type' => 'required|string',
             'available_date' => 'required|date',
             'price' => 'required|numeric',
-            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg'
+            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'location_url' => 'nullable|url'
         ]);
 
         if ($request->hasFile('sample_photo')) {
@@ -43,12 +53,18 @@ class VenueController extends Controller
         return redirect()->route('admin.venues.index')->with('success', 'Venue created successfully.');
     }
 
+    /**
+     * Show the form for editing the specified venue.
+     */
     public function edit($id)
     {
         $venue = Venue::findOrFail($id);
         return view('admin.venues.edit', compact('venue'));
     }
 
+    /**
+     * Update the specified venue in storage.
+     */
     public function update(Request $request, $id)
     {
         $venue = Venue::findOrFail($id);
@@ -61,7 +77,8 @@ class VenueController extends Controller
             'event_type' => 'required|string',
             'available_date' => 'required|date',
             'price' => 'required|numeric',
-            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg'
+            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'location_url' => 'nullable|url'
         ]);
 
         if ($request->hasFile('sample_photo')) {
@@ -75,13 +92,19 @@ class VenueController extends Controller
         return redirect()->route('admin.venues.index')->with('success', 'Venue updated successfully.');
     }
 
+    /**
+     * Remove the specified venue from storage.
+     */
     public function destroy($id)
     {
         Venue::destroy($id);
         return back()->with('success', 'Venue deleted successfully.');
     }
 
-        public function show($id)
+    /**
+     * Display the specified venue (for frontend/public view).
+     */
+    public function show($id)
     {
         $venue = Venue::findOrFail($id);
         return view('venues.show', compact('venue'));

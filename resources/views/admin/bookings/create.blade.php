@@ -4,53 +4,52 @@
 
 @section('content')
 <div class="container">
-    <h1>Create Booking</h1>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <h2>Create New Booking</h2>
 
     <form action="{{ route('admin.bookings.store') }}" method="POST">
         @csrf
 
         <div class="form-group">
-            <label for="event_id">Select Event</label>
-            <select name="event_id" id="event_id" class="form-control" required>
-                <option value="">-- Select Event --</option>
-                @foreach ($events as $event)
-                    <option value="{{ $event->id }}" {{ old('event_id') == $event->id ? 'selected' : '' }}>
-                        {{ $event->name }} - RM{{ number_format($event->price, 2) }}
-                    </option>
+            <label for="customer_id">Customer</label>
+            <select name="customer_id" class="form-control" required>
+                <option value="">-- Select Customer --</option>
+                @foreach($customers as $customer)
+                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="event_date">Event Date</label>
-            <input type="date" id="event_date" name="event_date" class="form-control" value="{{ old('event_date') }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="total_amount">Total Amount (RM)</label>
-            <input type="number" name="total_amount" id="total_amount" class="form-control" value="{{ old('total_amount', 0) }}" required readonly>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control" required>
-                <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
-                <option value="Confirmed" {{ old('status') == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
-                <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+            <label for="venue_id">Venue</label>
+            <select name="venue_id" class="form-control" required>
+                <option value="">-- Select Venue --</option>
+                @foreach($venues as $venue)
+                    <option value="{{ $venue->id }}">{{ $venue->name }}</option>
+                @endforeach
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Booking</button>
+        <div class="form-group">
+            <label for="date">Event Date</label>
+            <input type="date" name="date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="time">Event Time</label>
+            <input type="time" name="time" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="package">Package</label>
+            <input type="text" name="package" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note (Optional)</label>
+            <textarea name="note" class="form-control" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create Booking</button>
     </form>
 </div>
 @endsection

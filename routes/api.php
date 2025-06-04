@@ -8,28 +8,37 @@ use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\RestController;
 use App\Http\Controllers\API\VenueApiController;
 
-// ========== Resource Test Route (Optional) ==========
-Route::resource('person', RestController::class);
 
-// ========== Public: Venue Listing ==========
-Route::get('/venues', [VenueApiController::class, 'index']);       // List venues with optional filters
-Route::get('/venues/{id}', [VenueApiController::class, 'show']);   // Show venue by ID
-Route::get('/venues', [VenueApiController::class, 'index']);
+// Public API Routes
 
-// ========== Public: Authentication ==========
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-// ========== Protected Routes ==========
+// Example/Test Resource API (optional)
+Route::apiResource('person', RestController::class);
+
+// Venue Listings (Supports optional filters: ?location=&date=&package_type=&event_type=)
+Route::get('/venues', [VenueApiController::class, 'index'])->name('api.venues.index');
+Route::get('/venues/{id}', [VenueApiController::class, 'show'])->name('api.venues.show');
+
+//  User Registration and Login
+Route::post('/register', [AuthController::class, 'register'])->name('api.auth.register');
+Route::post('/login', [AuthController::class, 'login'])->name('api.auth.login');
+
+// ===========================
+// Protected API Routes (Require Auth via Sanctum Token)
+// ===========================
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Bookings CRUD
-    Route::get('/bookings', [BookingController::class, 'index']);
-    Route::post('/bookings', [BookingController::class, 'store']);
-    Route::put('/bookings/{id}', [BookingController::class, 'update']);
-    Route::delete('/bookings/{id}', [BookingController::class, 'destroy']);
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('api.auth.logout');
 
-    // Authenticated user profile
-    Route::get('/user', [AuthController::class, 'user']);
+    // Get Authenticated User Info
+    Route::get('/user', [AuthController::class, 'user'])->name('api.auth.user');
+
+    // Booking Management
+    Route::get('/bookings', [BookingController::class, 'index'])->name('api.bookings.index');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('api.bookings.store');
+    Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('api.bookings.show'); // Optional
+
+    Route::match(['put', 'patch'], '/bookings/{id}', [BookingController::class, 'update'])->name('api.bookings.update');
+    Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('api.bookings.destroy');
 });

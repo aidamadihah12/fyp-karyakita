@@ -14,6 +14,7 @@
             <tr>
                 <th>Name</th>
                 <th>Location</th>
+                <th>Location URL</th>
                 <th>Package Type</th>
                 <th>Event Type</th>
                 <th>Available Date</th>
@@ -27,6 +28,13 @@
             <tr>
                 <td>{{ $venue->name }}</td>
                 <td>{{ $venue->location }}</td>
+                <td>
+                    @if($venue->location_url)
+                        <a href="{{ $venue->location_url }}" target="_blank">View</a>
+                    @else
+                        <em>Not set</em>
+                    @endif
+                </td>
                 <td>{{ $venue->package_type }}</td>
                 <td>{{ $venue->event_type }}</td>
                 <td>{{ $venue->available_date }}</td>
