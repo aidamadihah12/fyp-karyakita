@@ -23,5 +23,23 @@ class VenueApiController extends Controller
             'data' => $venues
         ]);
     }
+
+    public function show($id)
+{
+    $venue = Venue::find($id);
+
+    if (!$venue) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Venue not found',
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $venue,
+    ]);
+}
+
 }
 

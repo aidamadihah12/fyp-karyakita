@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\FreelanceController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\VenueController;
 
 // Admin sub-controllers
 use App\Http\Controllers\Admin\UserController;
@@ -51,6 +52,12 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('payments', PaymentController::class)->only(['index', 'show']);
     Route::resource('users', UserController::class);
     Route::resource('venues', AdminVenueController::class)->except(['show']);
+
+
+    //Venue Listing
+    Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
+    Route::get('/venues/{id}', [VenueController::class, 'show'])->name('venues.show');
+    Route::resource('venues', VenueController::class);
 
     // Reports, Profit, System Testing
     Route::get('reports', [ReportController::class, 'index'])->name('reports');

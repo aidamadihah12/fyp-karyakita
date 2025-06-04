@@ -80,4 +80,10 @@ class VenueController extends Controller
         Venue::destroy($id);
         return back()->with('success', 'Venue deleted successfully.');
     }
+
+        public function show($id)
+    {
+        $venue = Venue::findOrFail($id);
+        return view('venues.show', compact('venue'));
+    }
 }
