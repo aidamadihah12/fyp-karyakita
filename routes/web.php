@@ -12,7 +12,6 @@ use App\Http\Controllers\AssignmentController;
 
 // ================= PUBLIC & AUTH ROUTES =================
 
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication Routes
@@ -29,7 +28,6 @@ Route::get('/forgot-password', fn() => view('auth.forgot-password'))->name('pass
 Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
-
 
 
 // ================= ADMIN ROUTES =================
@@ -53,16 +51,13 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/liveview', [\App\Http\Controllers\Admin\LiveViewController::class, 'index'])->name('liveview.index');
     Route::post('/liveview/reset', [\App\Http\Controllers\Admin\LiveViewController::class, 'reset'])->name('liveview.reset');
 
-     Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
     Route::get('assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
     Route::post('assignments', [AssignmentController::class, 'store'])->name('assignments.store');
     Route::get('assignments/{assignment}/edit', [AssignmentController::class, 'edit'])->name('assignments.edit');
     Route::put('assignments/{assignment}', [AssignmentController::class, 'update'])->name('assignments.update');
     Route::delete('assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('assignments.destroy');
-
-    Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
     Route::post('assignments/assign', [AssignmentController::class, 'assign'])->name('assignments.assign');
-
 });
 
 
@@ -85,7 +80,6 @@ Route::middleware(['auth', 'role:Staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/live-view', [StaffController::class, 'liveView'])->name('liveview');
 
     Route::resource('venues', StaffVenueController::class);
-
 });
 
 
@@ -101,17 +95,9 @@ Route::middleware(['auth', 'role:Freelance'])->prefix('freelance')->name('freela
 
     // Assignments
     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
-    Route::post('/assignments/accept/{id}', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
-
-        // Route to show the media upload form
-    Route::get('/media/upload', [App\Http\Controllers\FreelanceController::class, 'showUploadForm'])
-        ->name('upload.media.form');
-
-    // Route to handle media upload POST
-    Route::post('/media/upload', [App\Http\Controllers\FreelanceController::class, 'uploadMedia'])
-        ->name('upload.media.submit');
-
-     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
-
     Route::patch('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
+
+    // Media Upload
+    Route::get('/media/upload', [FreelanceController::class, 'showUploadForm'])->name('upload.media.form');
+    Route::post('/media/upload', [FreelanceController::class, 'uploadMedia'])->name('upload.media.submit');
 });
