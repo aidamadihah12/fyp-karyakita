@@ -51,7 +51,6 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/liveview', [\App\Http\Controllers\Admin\LiveViewController::class, 'index'])->name('liveview.index');
     Route::post('/liveview/reset', [\App\Http\Controllers\Admin\LiveViewController::class, 'reset'])->name('liveview.reset');
 
-    Route::resource('venues', \App\Http\Controllers\Admin\VenueController::class);
     // Assignment Routes using the properly imported Admin\AssignmentController
     Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
     Route::get('assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
