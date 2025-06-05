@@ -9,17 +9,30 @@ class Event extends Model
 {
     use HasFactory;
 
-    // Add the fillable property to define which fields can be mass-assigned
+    // Add all expected fields including customer_id (foreign key)
     protected $fillable = [
-        'name', 'date', 'available_slots', 'price', 'image'
+        'name',
+        'event_date',
+        'available_slots',
+        'price',
+        'image',
+        'location',
+        'package_type',
+        'customer_id',
     ];
 
-    // Cast 'date' to Carbon instance
-    protected $dates = ['date'];  // This will automatically convert 'date' field to Carbon instance
+    // Use correct cast for event_date
+    protected $dates = ['event_date'];
 
-    // Define the relationship between Event and Booking
+    // Event belongs to a customer (user)
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    // Event has many bookings
     public function bookings()
     {
-        return $this->hasMany(Booking::class); // Event has many bookings
+        return $this->hasMany(Booking::class);
     }
 }

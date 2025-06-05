@@ -8,7 +8,8 @@ use App\Http\Controllers\FreelanceController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\VenueController as AdminVenueController;
 use App\Http\Controllers\Staff\VenueController as StaffVenueController;
-use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\Admin\AssignmentController;
+
 
 // ================= PUBLIC & AUTH ROUTES =================
 
