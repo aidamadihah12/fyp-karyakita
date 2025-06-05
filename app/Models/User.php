@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,13 +11,10 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasRoles;
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
      */
     protected $fillable = [
         'name',
@@ -26,13 +23,12 @@ class User extends Authenticatable
         'user_role',
         'password',
         'availability',
+        'first_name',
+        'last_name',
     ];
-
 
     /**
      * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -41,22 +37,26 @@ class User extends Authenticatable
 
     /**
      * The attributes that should be cast.
-     *
-     * @var array<string, string>
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
+    /**
+     * Accessor for full name.
+     */
     public function getFullNameAttribute()
-{
-    return $this->first_name . ' ' . $this->last_name;
-}
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
 
-public function customer()
-{
-    return $this->belongsTo(User::class, 'customer_id');
-}
-
+    /**
+     * Relationship (if any).
+     * Adjust if you have a 'customer_id' foreign key in another table.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
 }
