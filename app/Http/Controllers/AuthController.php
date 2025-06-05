@@ -15,35 +15,43 @@ class AuthController extends Controller
     /**
      * Handle user registration for both web and API.
      */
-    public function register(Request $request)
-    {
-        // Validate incoming request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|max:15',
-            'user_role' => 'required|in:admin,staff,freelance',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+public function register(Request $request)
+{
+    // Validate incoming request
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'phone' => 'required|string|max:15',
+        'user_role' => 'required|string', // e.g., admin, staff, freelance, customer
+        'password' => 'required|string|min:6|confirmed',
+    ]);
 
-        // Create user
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'],
-            'user_role' => $validated['user_role'],
-            'password' => Hash::make($validated['password']),
-        ]);
+    // Create user
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'phone' => $validated['phone'],
+        'user_role' => $validated['user_role'],
+        'password' => Hash::make($validated['password']),
+    ]);
 
-        // If the request is API, return the token
-        if ($request->expectsJson()) {
-            $token = $user->createToken('API Token')->plainTextToken;
-            return response()->json(['user' => $user, 'token' => $token]);
-        }
+    // Determine and assign the correct Spatie role
+    $role = in_array(strtolower($validated['user_role']), ['admin', 'staff', 'freelance'])
+        ? ucfirst(strtolower($validated['user_role']))
+        : 'Customer';
 
-        // Otherwise, handle web registration redirect
-        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
+    $user->assignRole($role); // This assumes roles already exist
+
+    // If the request is API, return token
+    if ($request->expectsJson()) {
+        $token = $user->createToken('API Token')->plainTextToken;
+        return response()->json(['user' => $user, 'token' => $token]);
     }
+
+    // Otherwise, handle web registration redirect
+    return redirect()->route('login')->with('success', 'Registration successful! Please login.');
+}
+
 
     /**
      * Handle login for both web and API.
@@ -167,4 +175,6 @@ class AuthController extends Controller
             ? redirect()->route('login')->with('success', __($status))
             : back()->withErrors(['email' => [__($status)]]);
     }
+
+
 }

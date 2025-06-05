@@ -9,13 +9,18 @@ use App\Models\Event;
 
 class AssignmentController extends Controller
 {
-    public function index()
+// inside index method
+public function index()
 {
-    $events = Event::where('status', 'pending')->get(); // or any filter
-    $freelancers = User::role('Freelance')->get(); // Assuming you use Spatie Roles
+    // Get customers, e.g., users with 'Customer' role, eager load related event dates if needed
+    $customers = User::role('Customer')->get();
 
-    return view('admin.assignments.index', compact('events', 'freelancers'));
+    // Freelancers as before
+    $freelancers = User::role('Freelance')->get();
+
+    return view('admin.assignments.index', compact('customers', 'freelancers'));
 }
+
 
 public function assign(Request $request)
 {

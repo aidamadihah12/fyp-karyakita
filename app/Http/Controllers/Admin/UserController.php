@@ -33,7 +33,7 @@ public function index()
         $request->validate([
             'full_name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email,' . $id,
-            'user_role' => 'required|in:Admin,Staff,Photographer',
+            'user_role' => 'required|in:Admin,Staff,Freelance',
         ]);
 
         $user->update($request->only(['full_name', 'email', 'user_role']));

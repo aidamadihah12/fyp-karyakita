@@ -35,7 +35,7 @@
             <select name="user_role" id="user_role" class="form-select" required>
                 <option value="Admin" {{ old('user_role', $user->user_role) == 'Admin' ? 'selected' : '' }}>Admin</option>
                 <option value="Staff" {{ old('user_role', $user->user_role) == 'Staff' ? 'selected' : '' }}>Staff</option>
-                <option value="Photographer" {{ old('user_role', $user->user_role) == 'Photographer' ? 'selected' : '' }}>Photographer</option>
+                <option value="Freelance" {{ old('user_role', $user->user_role) == 'Freelance' ? 'selected' : '' }}>Freelance</option>
             </select>
         </div>
 

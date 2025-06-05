@@ -60,9 +60,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::put('assignments/{assignment}', [AssignmentController::class, 'update'])->name('assignments.update');
     Route::delete('assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('assignments.destroy');
 
-    Route::get('/assignments', [AssignmentController::class, 'index'])->name('assignments.index');  // List events + assign
-    Route::post('/assignments/assign', [AssignmentController::class, 'assign'])->name('assignments.assign');  // Handle assignment form
-    
+    Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+    Route::post('assignments/assign', [AssignmentController::class, 'assign'])->name('assignments.assign');
+
 });
 
 
