@@ -43,7 +43,7 @@ class BookingController extends Controller
         $event = Event::findOrFail($validated['event_id']);
 
         $booking = Booking::create([
-            'customer_id' => $validated['customer_id'],
+            //'customer_id' => $validated['customer_id'],
             'event_id' => $event->id,
             'venue_id' => $validated['venue_id'] ?? null,
             'date' => $validated['date'],
@@ -51,7 +51,7 @@ class BookingController extends Controller
             'note' => $validated['note'] ?? null,
             'total_amount' => $event->price,
             'status' => $validated['status'],
-            // 'user_id' => auth()->id() ?? null, // Uncomment if API authentication is used
+            'user_id' => auth()->id() ?? null, // Uncomment if API authentication is used
         ]);
 
         return response()->json([
