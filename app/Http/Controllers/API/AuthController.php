@@ -13,38 +13,35 @@ use Illuminate\Support\Facades\Password;
 class AuthController extends Controller
 {
     /**
-     * Handle user registration (default role: Customer).
+     * Handle user registration.
      */
     public function register(Request $request)
     {
+        // Validate incoming data
         $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:15',
+            'phone' => 'required|string|max:15',
+            'user_role' => 'required|in:admin,staff,freelance',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
+        // Create a new user
         $user = User::create([
-            'first_name' => $validated['first_name'],
-            'last_name'  => $validated['last_name'],
-            'name'       => $validated['first_name'] . ' ' . $validated['last_name'],
-            'email'      => $validated['email'],
-            'phone'      => $validated['phone'],
-            'user_role'  => 'Customer',
-            'password'   => Hash::make($validated['password']),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'user_role' => $validated['user_role'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        $user->assignRole('Customer');
-
+        // Generate token for the user
         $token = $user->createToken('MyApp')->plainTextToken;
 
         return response()->json([
-            'success' => true,
-            'message' => 'Customer registered successfully',
             'user' => $user,
             'token' => $token,
-        ], 201);
+        ]);
     }
 
     /**
@@ -57,6 +54,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        // Check if the credentials are correct
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -65,22 +63,23 @@ class AuthController extends Controller
             ]);
         }
 
+        // Create the Sanctum token for the user
         $token = $user->createToken('MyApp')->plainTextToken;
 
         return response()->json([
-            'success' => true,
-            'message' => 'Login successful',
             'user' => $user,
             'token' => $token,
         ]);
     }
 
     /**
-     * Handle user logout (invalidate all tokens).
+     * Handle user logout (invalidate token).
      */
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $request->user()->tokens->each(function ($token) {
+            $token->delete();
+        });
 
         return response()->json(['message' => 'Logged out successfully']);
     }
@@ -94,7 +93,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Send password reset link (via email).
+     * Send password reset link.
      */
     public function sendResetLink(Request $request)
     {
@@ -102,10 +101,9 @@ class AuthController extends Controller
 
         $status = Password::sendResetLink($request->only('email'));
 
-        return response()->json([
-            'message' => __($status),
-            'success' => $status === Password::RESET_LINK_SENT
-        ], $status === Password::RESET_LINK_SENT ? 200 : 400);
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with(['status' => __($status)])
+            : back()->withErrors(['email' => __($status)]);
     }
 
     /**
@@ -130,9 +128,8 @@ class AuthController extends Controller
             }
         );
 
-        return response()->json([
-            'message' => __($status),
-            'success' => $status === Password::PASSWORD_RESET
-        ], $status === Password::PASSWORD_RESET ? 200 : 400);
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('success', __($status))
+            : back()->withErrors(['email' => [__($status)]]);
     }
 }
