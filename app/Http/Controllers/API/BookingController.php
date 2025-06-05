@@ -6,10 +6,25 @@ use App\Models\Booking;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
-    // Get all bookings with related event data
+    // Validation rules extracted to a private method
+    private function validationRules(): array
+    {
+        return [
+            'customer_id' => ['required', 'exists:customers,id'],
+            'event_id' => ['required', 'exists:events,id'],
+            'venue_id' => ['nullable', 'exists:venues,id'],
+            'date' => ['required', 'date'],
+            'status' => ['required', 'string', Rule::in(['Pending', 'Confirmed', 'Completed', 'Assigned'])],
+            'note' => ['nullable', 'string'],
+            'package' => ['nullable', 'string'],
+        ];
+    }
+
+    // List all bookings with related data
     public function index()
     {
         $bookings = Booking::with(['event', 'customer', 'venue', 'freelancer'])->get();
@@ -23,27 +38,19 @@ class BookingController extends Controller
     // Store a new booking
     public function store(Request $request)
     {
-        $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'event_id' => 'required|exists:events,id',
-            'venue_id' => 'nullable|exists:venues,id',
-            'date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed',
-            'note' => 'nullable|string',
-            'package' => 'nullable|string',
-        ]);
+        $validated = $request->validate($this->validationRules());
 
-        $event = Event::findOrFail($request->event_id);
+        $event = Event::findOrFail($validated['event_id']);
 
         $booking = Booking::create([
-            'customer_id' => $request->customer_id,
+            'customer_id' => $validated['customer_id'],
             'event_id' => $event->id,
-            'venue_id' => $request->venue_id,
-            'date' => $request->date,
-            'package' => $request->package ?? null,
-            'note' => $request->note ?? null,
+            'venue_id' => $validated['venue_id'] ?? null,
+            'date' => $validated['date'],
+            'package' => $validated['package'] ?? null,
+            'note' => $validated['note'] ?? null,
             'total_amount' => $event->price,
-            'status' => $request->status,
+            'status' => $validated['status'],
             // 'user_id' => auth()->id() ?? null, // Uncomment if API authentication is used
         ]);
 
@@ -54,38 +61,33 @@ class BookingController extends Controller
         ], 201);
     }
 
-    // Update a booking
-    public function update(Request $request, $id)
+    // Show a single booking
+    public function show(Booking $booking)
     {
-        $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'event_id' => 'required|exists:events,id',
-            'venue_id' => 'nullable|exists:venues,id',
-            'date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
-            'note' => 'nullable|string',
-            'package' => 'nullable|string',
+        $booking->load(['event', 'customer', 'venue', 'freelancer']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $booking,
         ]);
+    }
 
-        $booking = Booking::find($id);
-        if (!$booking) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Booking not found',
-            ], 404);
-        }
+    // Update an existing booking
+    public function update(Request $request, Booking $booking)
+    {
+        $validated = $request->validate($this->validationRules());
 
-        $event = Event::findOrFail($request->event_id);
+        $event = Event::findOrFail($validated['event_id']);
 
         $booking->update([
-            'customer_id' => $request->customer_id,
+            'customer_id' => $validated['customer_id'],
             'event_id' => $event->id,
-            'venue_id' => $request->venue_id,
-            'date' => $request->date,
-            'package' => $request->package ?? null,
-            'note' => $request->note ?? null,
+            'venue_id' => $validated['venue_id'] ?? null,
+            'date' => $validated['date'],
+            'package' => $validated['package'] ?? null,
+            'note' => $validated['note'] ?? null,
             'total_amount' => $event->price,
-            'status' => $request->status,
+            'status' => $validated['status'],
         ]);
 
         return response()->json([
@@ -96,17 +98,8 @@ class BookingController extends Controller
     }
 
     // Delete a booking
-    public function destroy($id)
+    public function destroy(Booking $booking)
     {
-        $booking = Booking::find($id);
-
-        if (!$booking) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Booking not found',
-            ], 404);
-        }
-
         $booking->delete();
 
         return response()->json([

@@ -24,12 +24,16 @@ class AssignmentController extends Controller
         $request->validate([
             'event_id' => 'required|exists:events,id',
             'freelancer_id' => 'required|exists:users,id',
+            'booking_id' => 'required|exists:bookings,id',
         ]);
 
-        Assignment::updateOrCreate(
-            ['event_id' => $request->event_id],
-            ['freelancer_id' => $request->freelancer_id]
-        );
+
+        $request->validate([
+            'event_id' => 'required|exists:events,id',
+            'freelancer_id' => 'required|exists:users,id',
+            'booking_id' => 'required|exists:bookings,id', // ADD THIS
+        ]);
+
 
         return redirect()->route('assignments.index')->with('success', 'Freelancer assigned successfully.');
     }

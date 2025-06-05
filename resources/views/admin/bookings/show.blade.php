@@ -26,15 +26,19 @@
             </tr>
             <tr>
                 <th scope="row">Time</th>
-                <td>{{ $booking->time }}</td>
+                <td>{{ $booking->time ?? '-' }}</td>
             </tr>
             <tr>
                 <th scope="row">Package</th>
-                <td>{{ $booking->package }}</td>
+                <td>{{ $booking->package ?? '-' }}</td>
             </tr>
             <tr>
                 <th scope="row">Note</th>
                 <td>{{ $booking->note ?? '-' }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Status</th>
+                <td>{{ $booking->status ?? '-' }}</td>
             </tr>
         </tbody>
     </table>

@@ -3,8 +3,8 @@
 @section('title', 'Booking Details')
 
 @section('content')
-<div class="container">
-    <h2>Booking Details</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Booking Details</h2>
 
     <table class="table table-bordered">
         <tr>
@@ -25,15 +25,19 @@
         </tr>
         <tr>
             <th>Time</th>
-            <td>{{ $booking->time }}</td>
+            <td>{{ $booking->time ?? '-' }}</td>
         </tr>
         <tr>
             <th>Package</th>
-            <td>{{ $booking->package }}</td>
+            <td>{{ $booking->package ?? '-' }}</td>
         </tr>
         <tr>
             <th>Note</th>
-            <td>{{ $booking->note }}</td>
+            <td>{{ $booking->note ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ $booking->status ?? '-' }}</td>
         </tr>
     </table>
 

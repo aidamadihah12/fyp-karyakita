@@ -8,8 +8,7 @@ use App\Http\Controllers\FreelanceController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\VenueController as AdminVenueController;
 use App\Http\Controllers\Staff\VenueController as StaffVenueController;
-use App\Http\Controllers\Admin\AssignmentController;
-
+use App\Http\Controllers\Admin\AssignmentController; // Correct import with Admin namespace
 
 // ================= PUBLIC & AUTH ROUTES =================
 
@@ -52,6 +51,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/liveview', [\App\Http\Controllers\Admin\LiveViewController::class, 'index'])->name('liveview.index');
     Route::post('/liveview/reset', [\App\Http\Controllers\Admin\LiveViewController::class, 'reset'])->name('liveview.reset');
 
+    // Assignment Routes using the properly imported Admin\AssignmentController
     Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
     Route::get('assignments/create', [AssignmentController::class, 'create'])->name('assignments.create');
     Route::post('assignments', [AssignmentController::class, 'store'])->name('assignments.store');
