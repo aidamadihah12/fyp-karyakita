@@ -1,15 +1,16 @@
 <?php
 
+// App\Http\Controllers\API\BookingController.php
+
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Event;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class BookingController extends Controller
 {
-    // Get all bookings with related event data
     public function index()
     {
         $bookings = Booking::with(['event', 'customer', 'venue', 'freelancer'])->get();
@@ -20,11 +21,10 @@ class BookingController extends Controller
         ]);
     }
 
-    // Store a new booking
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required|exists:users,id', // customer must exist in users table
             'event_id' => 'required|exists:events,id',
             'venue_id' => 'nullable|exists:venues,id',
             'date' => 'required|date',
@@ -40,11 +40,11 @@ class BookingController extends Controller
             'event_id' => $event->id,
             'venue_id' => $request->venue_id,
             'date' => $request->date,
-            'package' => $request->package ?? null,
-            'note' => $request->note ?? null,
+            'package' => $request->package,
+            'note' => $request->note,
             'total_amount' => $event->price,
             'status' => $request->status,
-            'user_id' => auth()->id() ?? null, // Uncomment if API authentication is used
+            'user_id' => auth()->id() ?? null,
         ]);
 
         return response()->json([
@@ -54,11 +54,10 @@ class BookingController extends Controller
         ], 201);
     }
 
-    // Update a booking
     public function update(Request $request, $id)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
             'venue_id' => 'nullable|exists:venues,id',
             'date' => 'required|date',
@@ -69,10 +68,7 @@ class BookingController extends Controller
 
         $booking = Booking::find($id);
         if (!$booking) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Booking not found',
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
         }
 
         $event = Event::findOrFail($request->event_id);
@@ -82,8 +78,8 @@ class BookingController extends Controller
             'event_id' => $event->id,
             'venue_id' => $request->venue_id,
             'date' => $request->date,
-            'package' => $request->package ?? null,
-            'note' => $request->note ?? null,
+            'package' => $request->package,
+            'note' => $request->note,
             'total_amount' => $event->price,
             'status' => $request->status,
         ]);
@@ -95,16 +91,11 @@ class BookingController extends Controller
         ]);
     }
 
-    // Delete a booking
     public function destroy($id)
     {
         $booking = Booking::find($id);
-
         if (!$booking) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Booking not found',
-            ], 404);
+            return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
         }
 
         $booking->delete();
@@ -115,3 +106,4 @@ class BookingController extends Controller
         ]);
     }
 }
+

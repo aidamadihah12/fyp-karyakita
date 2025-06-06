@@ -30,17 +30,17 @@ class VenueController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string',
-            'package_type' => 'required|string',
-            'event_type' => 'required|string',
-            'available_date' => 'required|date',
-            'price' => 'required|numeric',
-            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'location_url' => 'nullable|url'
-        ]);
+$validated = $request->validate([
+    'name' => 'required|string|max:255',
+    'description' => 'nullable|string',
+    'location' => 'required|string|max:255',
+    'location_url' => 'nullable|url',
+    'package_type' => 'required|string|max:255',
+    'event_type' => 'required|string|max:255',
+    'available_date' => 'required|date',
+    'price' => 'required|numeric|min:0',
+    'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+]);
 
         if ($request->hasFile('sample_photo')) {
             $filename = time() . '.' . $request->sample_photo->extension();
@@ -69,18 +69,17 @@ class VenueController extends Controller
     {
         $venue = Venue::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'location' => 'required|string',
-            'package_type' => 'required|string',
-            'event_type' => 'required|string',
-            'available_date' => 'required|date',
-            'price' => 'required|numeric',
-            'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'location_url' => 'nullable|url'
-        ]);
-
+$validated = $request->validate([
+    'name' => 'required|string|max:255',
+    'description' => 'nullable|string',
+    'location' => 'required|string|max:255',
+    'location_url' => 'nullable|url',
+    'package_type' => 'required|string|max:255',
+    'event_type' => 'required|string|max:255',
+    'available_date' => 'required|date',
+    'price' => 'required|numeric|min:0',
+    'sample_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+]);
         if ($request->hasFile('sample_photo')) {
             $filename = time() . '.' . $request->sample_photo->extension();
             $request->sample_photo->move(public_path('uploads'), $filename);

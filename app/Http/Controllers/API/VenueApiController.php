@@ -31,7 +31,22 @@ class VenueApiController extends Controller
         return response()->json([
             'status' => 'success',
             'count' => $venues->count(),
-            'data' => $venues
+            'data' => $venues->map(function ($venue) {
+                return [
+                    'id' => $venue->id,
+                    'name' => $venue->name,
+                    'description' => $venue->description,
+                    'location' => $venue->location,
+                    'location_url' => $venue->location_url,
+                    'package_type' => $venue->package_type,
+                    'event_type' => $venue->event_type,
+                    'available_date' => $venue->available_date,
+                    'price' => $venue->price,
+                    'photo_url' => $venue->sample_photo
+                        ? asset('uploads/' . $venue->sample_photo)
+                        : null,
+                ];
+            }),
         ]);
     }
 
@@ -51,7 +66,20 @@ class VenueApiController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $venue,
+            'data' => [
+                'id' => $venue->id,
+                'name' => $venue->name,
+                'description' => $venue->description,
+                'location' => $venue->location,
+                'location_url' => $venue->location_url,
+                'package_type' => $venue->package_type,
+                'event_type' => $venue->event_type,
+                'available_date' => $venue->available_date,
+                'price' => $venue->price,
+                'photo_url' => $venue->sample_photo
+                    ? asset('uploads/' . $venue->sample_photo)
+                    : null,
+            ],
         ]);
     }
 }

@@ -8,7 +8,6 @@ use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Assignment;
 
-
 class AdminController extends Controller
 {
     // ===== DASHBOARD =====
@@ -19,7 +18,7 @@ class AdminController extends Controller
         $totalPayments = Payment::sum('amount');
         $pendingBookings = Booking::where('status', 'Pending')->count();
 
-        $recentBookings = Booking::with('user')
+        $recentBookings = Booking::with('customer')
                             ->orderBy('created_at', 'desc')
                             ->limit(5)
                             ->get();
@@ -30,26 +29,24 @@ class AdminController extends Controller
     }
 
     // ===== CALENDAR PAGE =====
- public function calendar()
-{
-    $bookings = Booking::with('user')->get();
+    public function calendar()
+    {
+        $bookings = Booking::with('customer')->get();
 
-    $events = $bookings->map(function ($b) {
-        // Check if the user exists before accessing the full_name property
-        $userFullName = $b->user ? $b->user->full_name : 'No User';
+        $events = $bookings->map(function ($b) {
+            $userFullName = $b->customer ? $b->customer->full_name : 'No Customer';
 
-        return [
-            'title' => $b->event_type . ' - ' . $userFullName,
-            'start' => $b->event_date,
-            'url'   => route('admin.bookings.show', $b->id), // optional if show route exists
-            'color' => $b->status === 'Pending' ? '#ffc107' :
-                      ($b->status === 'Confirmed' ? '#28a745' : '#6c757d'),
-        ];
-    });
+            return [
+                'title' => $b->event_type . ' - ' . $userFullName,
+                'start' => $b->event_date,
+                'url'   => route('admin.bookings.show', $b->id),
+                'color' => $b->status === 'Pending' ? '#ffc107' :
+                          ($b->status === 'Confirmed' ? '#28a745' : '#6c757d'),
+            ];
+        });
 
-    return view('admin.calendar', ['events' => $events]);
-}
-
+        return view('admin.calendar', ['events' => $events]);
+    }
 
     // ===== USERS MANAGEMENT =====
     public function indexUsers()
@@ -86,7 +83,7 @@ class AdminController extends Controller
     // ===== BOOKINGS MANAGEMENT =====
     public function indexBookings()
     {
-        $bookings = Booking::with('user')->paginate(10);
+        $bookings = Booking::with('customer')->paginate(10);
         return view('admin.bookings.index', compact('bookings'));
     }
 
@@ -119,13 +116,13 @@ class AdminController extends Controller
     // ===== PAYMENTS MANAGEMENT =====
     public function indexPayments()
     {
-        $payments = Payment::with('booking.user')->paginate(10);
+        $payments = Payment::with('booking.customer')->paginate(10);
         return view('admin.payments.index', compact('payments'));
     }
 
     public function showPayments($id)
     {
-        $payment = Payment::with('booking.user')->findOrFail($id);
+        $payment = Payment::with('booking.customer')->findOrFail($id);
         return view('admin.payments.show', compact('payment'));
     }
 
@@ -155,11 +152,6 @@ class AdminController extends Controller
     // ===== SYSTEM TESTING =====
     public function systemTesting()
     {
-        return view('admin.system.testing');
-    }
-
-    public function runSystemTests(Request $request)
-    {
         try {
             \DB::connection()->getPdo();
             $testResults = "Database connection: SUCCESS\n";
@@ -169,6 +161,7 @@ class AdminController extends Controller
 
         return redirect()->back()->with('testResults', $testResults);
     }
+
     public function show($id)
     {
         $booking = Booking::find($id);
@@ -181,26 +174,24 @@ class AdminController extends Controller
     }
 
     public function showAssignments()
-{
-    $assignments = Assignment::with('freelancer')->paginate(10);
-    $freelancers = User::where('role', 'Freelance')->get();
+    {
+        $assignments = Assignment::with('freelancer')->paginate(10);
+        $freelancers = User::where('role', 'Freelance')->get();
 
-    return view('admin.assignments.index', compact('assignments', 'freelancers'));
-}
+        return view('admin.assignments.index', compact('assignments', 'freelancers'));
+    }
 
-public function assignFreelancer(Request $request, $assignmentId)
-{
-    $request->validate([
-        'freelancer_id' => 'required|exists:users,id',
-    ]);
+    public function assignFreelancer(Request $request, $assignmentId)
+    {
+        $request->validate([
+            'freelancer_id' => 'required|exists:users,id',
+        ]);
 
-    $assignment = Assignment::findOrFail($assignmentId);
-    $assignment->freelancer_id = $request->freelancer_id;
-    $assignment->status = 'assigned'; // optional: update status
-    $assignment->save();
+        $assignment = Assignment::findOrFail($assignmentId);
+        $assignment->freelancer_id = $request->freelancer_id;
+        $assignment->status = 'assigned';
+        $assignment->save();
 
-    return redirect()->back()->with('success', 'Freelance photographer assigned successfully.');
-}
-
-
+        return redirect()->back()->with('success', 'Freelance photographer assigned successfully.');
+    }
 }

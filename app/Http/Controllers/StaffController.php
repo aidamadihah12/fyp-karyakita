@@ -21,7 +21,7 @@ class StaffController extends Controller
     // ===== BOOKINGS =====
     public function bookings()
     {
-        $bookings = Booking::with('user')->paginate(10);
+        $bookings = Booking::with('customer')->paginate(10);
         return view('staff.bookings.index', compact('bookings'));
     }
 
@@ -83,13 +83,13 @@ class StaffController extends Controller
     // ===== CALENDAR =====
     public function calendar()
     {
-        $bookings = Booking::with('user')
+        $bookings = Booking::with('customer')
             ->where('assigned_staff_id', auth()->id())
             ->get();
 
         $events = $bookings->map(function ($b) {
             return [
-                'title' => $b->event_type . ' - ' . ($b->user->full_name ?? 'Unknown'),
+                'title' => $b->event_type . ' - ' . ($b->customer->full_name ?? 'Unknown'),
                 'start' => $b->date,
                 'color' => match($b->status) {
                     'Pending' => '#ffc107',

@@ -1,57 +1,44 @@
 <?php
 
+// App\Models\Booking.php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\Event;
-use App\Models\Venue;
 
 class Booking extends Model
 {
-    use HasFactory;
-
-    protected $table = 'bookings';
-
     protected $fillable = [
-        'customer_id',  // foreign key pointing to users table
-        'venue_id',
+        'customer_id',
         'event_id',
+        'venue_id',
         'freelancer_id',
         'date',
-        'time',
-        'package',
-        'note',
         'status',
-        'total_amount'
+        'note',
+        'package',
+        'total_amount',
+        'user_id', // optional
     ];
-
-    // Relationships
-
-    public function customer()
-    {
-        // customer_id references users table
-        return $this->belongsTo(User::class, 'customer_id');
-    }
-
-    public function venue()
-    {
-        return $this->belongsTo(Venue::class, 'venue_id');
-    }
 
     public function event()
     {
-        return $this->belongsTo(Event::class, 'event_id');
+        return $this->belongsTo(Event::class);
     }
+    
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
 
     public function freelancer()
     {
         return $this->belongsTo(User::class, 'freelancer_id');
     }
 
-        public function user()
+    public function venue()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Venue::class);
     }
 }
