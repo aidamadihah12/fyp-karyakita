@@ -18,12 +18,20 @@ class AuthController extends Controller
      */
 public function register(Request $request)
 {
+    // ✅ TEMP FIX: Ensure roles exist in the current DB
+    if (Role::count() === 0) {
+        Role::create(['name' => 'Admin', 'guard_name' => 'web']);
+        Role::create(['name' => 'Staff', 'guard_name' => 'web']);
+        Role::create(['name' => 'Freelance', 'guard_name' => 'web']);
+        Role::create(['name' => 'Customer', 'guard_name' => 'web']);
+    }
+
     // Validate incoming request
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',
         'phone' => 'required|string|max:15',
-        'user_role' => 'required|string', // e.g., admin, staff, freelance, customer
+        'user_role' => 'required|string',
         'password' => 'required|string|min:6|confirmed',
     ]);
 
@@ -33,24 +41,22 @@ public function register(Request $request)
         'email' => $validated['email'],
         'phone' => $validated['phone'],
         'user_role' => $validated['user_role'],
-        'password' => Hash::make($validated['password']),
+        'password' => \Hash::make($validated['password']),
     ]);
 
-    // Determine and assign the correct Spatie role
+    // Assign role
     $role = in_array(strtolower($validated['user_role']), ['admin', 'staff', 'freelance'])
         ? ucfirst(strtolower($validated['user_role']))
         : 'Customer';
 
-     $user->assignRole($role);
+    $user->assignRole($role);
 
-
-    // If the request is API, return token
+    // Return response
     if ($request->expectsJson()) {
         $token = $user->createToken('API Token')->plainTextToken;
         return response()->json(['user' => $user, 'token' => $token]);
     }
 
-    // Otherwise, handle web registration redirect
     return redirect()->route('login')->with('success', 'Registration successful! Please login.');
 }
 
