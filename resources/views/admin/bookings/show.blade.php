@@ -7,43 +7,57 @@
     <h2 class="mb-4">Booking Details</h2>
 
     <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <th scope="row">Booking ID</th>
-                <td>{{ $booking->id }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Customer</th>
-                <td>{{ $booking->customer->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Venue</th>
-                <td>{{ $booking->venue->name ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Date</th>
-                <td>{{ \Carbon\Carbon::parse($booking->date)->format('Y-m-d') }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Time</th>
-                <td>{{ $booking->time ?? '-' }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Package</th>
-                <td>{{ $booking->package ?? '-' }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Note</th>
-                <td>{{ $booking->note ?? '-' }}</td>
-            </tr>
-            <tr>
-                <th scope="row">Status</th>
-                <td>{{ $booking->status ?? '-' }}</td>
-            </tr>
-        </tbody>
+        <tr>
+            <th>Booking ID</th>
+            <td>{{ $booking->id }}</td>
+        </tr>
+        <tr>
+            <th>Customer</th>
+            <td>{{ $booking->customer->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Venue</th>
+            <td>{{ $booking->venue->name ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <th>Date</th>
+            <td>{{ \Carbon\Carbon::parse($booking->date)->format('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>Time</th>
+            <td>{{ $booking->time ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Package</th>
+            <td>{{ $booking->package ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Note</th>
+            <td>{{ $booking->note ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ $booking->status ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Location</th>
+            <td>
+                {{ $booking->location ?? '-' }}
+            </td>
+        </tr>
+        <tr>
+            <th>Location URL</th>
+            <td>
+                @if ($booking->location_url)
+                    <a href="{{ $booking->location_url }}" target="_blank" rel="noopener noreferrer">View on Map</a>
+                @else
+                    -
+                @endif
+            </td>
+        </tr>
     </table>
 
-    <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-warning">Edit Booking</a>
-    <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Back to Bookings List</a>
+    <a href="{{ route('admin.bookings.edit', $booking->id) }}" class="btn btn-warning">Edit</a>
+    <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">Back to List</a>
 </div>
 @endsection

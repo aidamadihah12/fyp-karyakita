@@ -19,6 +19,7 @@
                 <th>Package</th>
                 <th>Note</th>
                 <th>Status</th>
+                <th>Location</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -41,12 +42,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.querySelector('#bookings-table tbody');
 
         if (!data.success || data.data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-center">No bookings found.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center">No bookings found.</td></tr>`;
             return;
         }
 
         data.data.forEach(booking => {
             const date = new Date(booking.date).toISOString().slice(0,10); // format yyyy-mm-dd
+
+            // Location column with map link if location_url exists
+            let locationHtml = booking.location ?? '-';
+            if (booking.location_url) {
+                locationHtml += `<br><a href="${booking.location_url}" target="_blank" rel="noopener noreferrer">Map Link</a>`;
+            }
+
             tbody.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td>${booking.id}</td>
@@ -57,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${booking.package ?? '-'}</td>
                     <td>${booking.note ?? '-'}</td>
                     <td>${booking.status ?? '-'}</td>
+                    <td>${locationHtml}</td>
                     <td>
                         <a href="/admin/bookings/${booking.id}" class="btn btn-info btn-sm">View</a>
                         <a href="/admin/bookings/${booking.id}/edit" class="btn btn-warning btn-sm">Edit</a>
@@ -73,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
         console.error('Error fetching bookings:', error);
         const tbody = document.querySelector('#bookings-table tbody');
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Failed to load bookings.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Failed to load bookings.</td></tr>`;
     });
 });
 </script>

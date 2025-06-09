@@ -8,24 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    protected $fillable = [
-        'customer_id',
-        'event_id',
-        'venue_id',
-        'freelancer_id',
-        'date',
-        'status',
-        'note',
-        'package',
-        'total_amount',
-        'user_id', // optional
-    ];
+protected $fillable = [
+    'event_id',
+    'event_type',
+    'event_date',
+    'note',
+    'total_amount',
+    'status',
+    'user_id',
+    'location',
+    'location_url',
+];
+
 
     public function event()
     {
         return $this->belongsTo(Event::class);
     }
-    
+
     public function customer()
     {
         return $this->belongsTo(User::class, 'customer_id');

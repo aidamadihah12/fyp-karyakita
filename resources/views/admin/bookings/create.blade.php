@@ -63,6 +63,36 @@
             @enderror
         </div>
 
+        <div class="form-group mb-3">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" required>
+                <option value="">-- Select Status --</option>
+                <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                <option value="Confirmed" {{ old('status') == 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                <option value="Cancelled" {{ old('status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+            </select>
+            @error('status')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="location">Location (Name/Address)</label>
+            <input type="text" name="location" id="location" class="form-control @error('location') is-invalid @enderror" value="{{ old('location') }}">
+            @error('location')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="location_url">Location URL (Google Maps)</label>
+            <input type="url" name="location_url" id="location_url" class="form-control @error('location_url') is-invalid @enderror" value="{{ old('location_url') }}">
+            @error('location_url')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
         <div class="form-group mb-4">
             <label for="note">Note (Optional)</label>
             <textarea name="note" id="note" class="form-control @error('note') is-invalid @enderror" rows="3">{{ old('note') }}</textarea>

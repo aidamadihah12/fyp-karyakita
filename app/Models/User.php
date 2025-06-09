@@ -33,6 +33,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $guard_name = 'web'; // optional, but explicit
+
     public function getFullNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;

@@ -98,10 +98,7 @@ Route::middleware(['auth', 'role:Freelance'])->prefix('freelance')->name('freela
     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
     Route::patch('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
 
-    Route::get('/media/upload', [FreelanceController::class, 'uploadMediaForm'])->name('freelance.upload.media'); // form
-    Route::post('/media/upload', [FreelanceController::class, 'uploadMedia'])->name('freelance.upload.media.submit');
-
     // Media Upload
-    Route::get('/freelance/upload', [FreelanceController::class, 'uploadMediaForm'])->name('freelance.upload.media');
+    Route::get('/media/upload', [FreelanceController::class, 'showUploadForm'])->name('upload.media.form');
     Route::post('/media/upload', [FreelanceController::class, 'uploadMedia'])->name('upload.media.submit');
 });
