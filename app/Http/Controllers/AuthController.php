@@ -40,7 +40,8 @@ public function register(Request $request)
         ? ucfirst(strtolower($validated['user_role']))
         : 'Customer';
 
-    $user->assignRole($role); // This assumes roles already exist
+    dd($role, \Spatie\Permission\Models\Role::all());
+
 
     // If the request is API, return token
     if ($request->expectsJson()) {
