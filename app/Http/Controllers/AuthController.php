@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -40,7 +41,7 @@ public function register(Request $request)
         ? ucfirst(strtolower($validated['user_role']))
         : 'Customer';
 
-    dd($role, \Spatie\Permission\Models\Role::all());
+     $user->assignRole($role);
 
 
     // If the request is API, return token
