@@ -8,6 +8,8 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\RestController;
 use App\Http\Controllers\API\VenueApiController;
+use App\Http\Controllers\API\EventApiController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +28,10 @@ Route::get('/venues/{id}', [VenueApiController::class, 'show'])->name('api.venue
 Route::post('/register', [AuthController::class, 'register'])->name('api.auth.register');
 Route::post('/login', [AuthController::class, 'login'])->name('api.auth.login');
 
+Route::get('/events', [EventApiController::class, 'index'])->name('api.events.index');
+Route::get('/events/{id}', [EventApiController::class, 'show'])->name('api.events.show');
+
+
 /*
 |--------------------------------------------------------------------------
 | Protected API Routes (Requires Sanctum Authentication)
@@ -43,4 +49,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings/{id}', [BookingController::class, 'show'])->name('api.bookings.show');
     Route::match(['put', 'patch'], '/bookings/{id}', [BookingController::class, 'update'])->name('api.bookings.update');
     Route::delete('/bookings/{id}', [BookingController::class, 'destroy'])->name('api.bookings.destroy');
+
+    Route::post('/events', [EventApiController::class, 'store'])->name('api.events.store');
+    Route::match(['put', 'patch'], '/events/{id}', [EventApiController::class, 'update'])->name('api.events.update');
+    Route::delete('/events/{id}', [EventApiController::class, 'destroy'])->name('api.events.destroy');
 });
