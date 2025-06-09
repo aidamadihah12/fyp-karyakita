@@ -44,6 +44,16 @@
 
 </div>
 
+<div class="mb-3">
+    <label><strong>Location URL:</strong></label><br>
+    @if($event->location_url)
+        <a href="{{ $event->location_url }}" target="_blank">{{ $event->location_url }}</a>
+    @else
+        <span>N/A</span>
+    @endif
+</div>
+
+
     <!-- Event Image -->
     @if ($event->image)
         <div class="mb-3">

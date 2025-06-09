@@ -52,6 +52,12 @@
             </textarea>
         </div>
 
+        <div class="form-group">
+            <label for="location_url">Location URL</label>
+            <input type="url" name="location_url" id="location_url" class="form-control" value="{{ old('location_url', $event->location_url ?? '') }}">
+        </div>
+
+
         <!-- Event Image -->
         <div class="form-group">
             <label for="image">Event Image (optional)</label>

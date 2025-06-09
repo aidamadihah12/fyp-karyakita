@@ -30,7 +30,8 @@ class EventController extends Controller
             'date' => 'required|date',
             'price' => 'required|integer|min:1',
             'available_slots' => 'required|integer|min:1',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'location_url' => 'nullable|url|max:255',
         ]);
 
         // Create the event
@@ -39,6 +40,7 @@ class EventController extends Controller
             'date' => $validated['date'],
             'price' => $validated['price'],
             'available_slots' => $validated['available_slots'],
+            'location_url' => $request->location_url,
         ]);
 
         // Handle the image upload if present
@@ -70,6 +72,7 @@ class EventController extends Controller
         'price' => 'required|integer|min:1',
         'available_slots' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'location_url' => 'nullable|url|max:255',
     ]);
 
     // Find the event by ID
@@ -80,6 +83,7 @@ class EventController extends Controller
     $event->date = $validated['date'];
     $event->price = $validated['price'];
     $event->available_slots = $validated['available_slots'];
+    $event->location_url = $request->location_url;
 
     // Handle the image upload if a new image is uploaded
     if ($request->hasFile('image')) {

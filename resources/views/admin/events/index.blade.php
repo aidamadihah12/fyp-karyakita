@@ -27,6 +27,7 @@
                 <th>Date</th>
                 <th>Available Slots</th>
                 <th>Current Image</th>
+                <th>Location</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -43,6 +44,16 @@
                             N/A
                         @endif
                     </td>
+
+                    <td>
+                        @if($event->location_url)
+                        <a href="{{ $event->location_url }}" target="_blank">View Map</a>
+                        @else
+                             N/A
+                         @endif
+                    </td>
+
+
                     <td>
                         <a href="{{ route('admin.events.edit', $event->id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this event?');">
@@ -51,6 +62,7 @@
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </td>
+
                 </tr>
             @endforeach
         </tbody>

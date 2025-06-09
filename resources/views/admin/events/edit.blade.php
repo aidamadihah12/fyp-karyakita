@@ -53,6 +53,11 @@
             <textarea name="basic_package" class="form-control" rows="4" required>{{ old('basic_package', $event->basic_package) }}</textarea>
         </div>
 
+        <div class="form-group">
+            <label for="location_url">Location URL</label>
+            <input type="url" name="location_url" id="location_url" class="form-control" value="{{ old('location_url', $event->location_url ?? '') }}">
+        </div>
+
         <!-- Current Event Image -->
         <div class="form-group">
             <label>Current Image</label><br>

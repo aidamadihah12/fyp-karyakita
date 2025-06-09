@@ -17,6 +17,7 @@ class Event extends Model
         'price',
         'image',
         'location',
+        'location_url',
         'package_type',
         'customer_id',
     ];
