@@ -12,7 +12,7 @@ class BookingController extends Controller
     // Get all bookings with relations
     public function index()
     {
-        $bookings = Booking::with(['event', 'customer', 'freelancer'])->get();
+        $bookings = Booking::with(['user:id,name,email', 'venue:id,name,address'])->get();
 
         return response()->json([
             'success' => true,

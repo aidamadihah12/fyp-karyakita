@@ -4,16 +4,16 @@
 
 @section('content')
 <div class="container">
-    <h2>Payment #{{ $payment->id }} Details</h2>
+    <h2 class="mb-4">Payment #{{ $payment->id }} Details</h2>
 
     <table class="table table-bordered w-50">
         <tr>
             <th>Booking ID</th>
-            <td>{{ $payment->booking->id }}</td>
+            <td>{{ $payment->booking->id ?? 'N/A' }}</td>
         </tr>
         <tr>
             <th>Client Name</th>
-            <td>{{ $payment->booking->user->full_name }}</td>
+            <td>{{ $payment->booking->user->full_name ?? 'N/A' }}</td>
         </tr>
         <tr>
             <th>Payment Date</th>
@@ -30,10 +30,7 @@
         <tr>
             <th>Status</th>
             <td>
-                <span class="badge
-                    @if($payment->status == 'Successful') bg-success
-                    @else bg-danger
-                    @endif">
+                <span class="badge {{ $payment->status === 'Successful' ? 'bg-success' : 'bg-danger' }}">
                     {{ $payment->status }}
                 </span>
             </td>

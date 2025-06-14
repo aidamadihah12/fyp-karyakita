@@ -41,4 +41,22 @@ protected $fillable = [
     {
         return $this->belongsTo(Venue::class);
     }
+
+        public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    
+    public function payment()
+{
+    return $this->hasOne(Payment::class, 'booking_id');
+}
+
+
+public function photographer()
+{
+    return $this->belongsTo(User::class, 'photographer_id');
+}
+
 }

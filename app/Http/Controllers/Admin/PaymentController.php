@@ -22,5 +22,5 @@ class PaymentController extends Controller
         return view('admin.payments.show', compact('payment'));
     }
 
-    // (Optional) Add more methods if needed (e.g., delete, refund)
+    // Optional: You can later add delete, refund, etc. here if needed.
 }
