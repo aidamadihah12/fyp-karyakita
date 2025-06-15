@@ -15,7 +15,7 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 height: 650,
-                events: @json($events), // ✅ Proper way to output preprocessed JSON
+                events: @json($events), // ✅ JSON passed from controller
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',

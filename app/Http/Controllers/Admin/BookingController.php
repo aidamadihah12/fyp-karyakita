@@ -49,7 +49,7 @@ class BookingController extends Controller
         'time' => 'required',
         'location' => 'nullable|string|max:255',
         'location_url' => 'nullable|url|max:255',
-        'photographer_id' => $validated['photographer_id'] ?? null,
+        'photographer_id' => 'nullable|exists:users,id',
 
     ]);
 
@@ -105,6 +105,8 @@ public function update(Request $request, $id)
 
     ]);
 
+
+
     $booking = Booking::findOrFail($id);
     $event = Event::findOrFail($validated['event_id']);
 
@@ -122,6 +124,7 @@ public function update(Request $request, $id)
 
     ]);
 
+
     return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully.');
 
 }
@@ -138,9 +141,9 @@ public function update(Request $request, $id)
     public function assignForm($id)
     {
         $booking = Booking::findOrFail($id);
-        $freelancers = User::where('user_role', 'freelance')->get();
+        $photographers = User::whereIn('user_role', ['staff', 'freelance'])->get();
 
-        return view('admin.bookings.assign', compact('booking', 'freelancers'));
+        return view('admin.bookings.assign', compact('booking', 'photographers'));
     }
 
 public function assignStore(Request $request, $id)
@@ -169,26 +172,41 @@ public function assignStore(Request $request, $id)
         return view('admin.bookings.assignment-list', compact('bookings'));
     }
 
-    public function confirmBooking(Request $request, $id)
+public function confirmBooking(Request $request, $id)
 {
     $booking = Booking::findOrFail($id);
 
-    // Example: mark booking as paid
     $booking->status = 'Paid';
     $booking->save();
 
-    // Only create payment if not already done
     if (!$booking->payment) {
         Payment::create([
             'booking_id' => $booking->id,
             'payment_date' => now(),
-            'payment_method' => 'Online Banking', // Or get from $request->payment_method
-            'amount' => $booking->total_price,
+            'payment_method' => 'Online Banking',
+            'amount' => $booking->total_amount, // ← use correct column
             'status' => 'Successful',
         ]);
     }
 
     return redirect()->back()->with('success', 'Booking confirmed and payment recorded.');
 }
+public function payment()
+{
+    return $this->hasOne(Payment::class, 'booking_id');
+}
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+public function getFullNameAttribute()
+{
+    $userFullName = $b->user->name ?? 'No Customer';
+
+}
+
+
 
 }

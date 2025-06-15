@@ -29,24 +29,30 @@ class AdminController extends Controller
     }
 
     // ===== CALENDAR PAGE =====
-    public function calendar()
-    {
-        $bookings = Booking::with('customer')->get();
+public function calendar()
+{
+    $bookings = Booking::with(['user', 'event', 'photographer'])->get();
 
-        $events = $bookings->map(function ($b) {
-            $userFullName = $b->customer ? $b->customer->full_name : 'No Customer';
+    $events = $bookings->map(function ($b) {
+        $eventName = $b->event->name ?? $b->event_type ?? 'Unnamed Event';
+        $photographerName = $b->photographer->name ?? 'No Photographer';
 
-            return [
-                'title' => $b->event_type . ' - ' . $userFullName,
-                'start' => $b->event_date,
-                'url'   => route('admin.bookings.show', $b->id),
-                'color' => $b->status === 'Pending' ? '#ffc107' :
-                          ($b->status === 'Confirmed' ? '#28a745' : '#6c757d'),
-            ];
-        });
+        return [
+            'title' => "{$eventName} - {$photographerName}",
+            'start' => $b->event_date,
+            'url'   => route('admin.bookings.show', $b->id),
+            'color' => match ($b->status) {
+                'Pending' => '#ffc107',
+                'Confirmed' => '#28a745',
+                'Completed' => '#004085',
+                default => '#6c757d',
+            },
+        ];
+    });
 
-        return view('admin.calendar', ['events' => $events]);
-    }
+    return view('admin.calendar', compact('events'));
+}
+
 
     // ===== USERS MANAGEMENT =====
     public function indexUsers()
@@ -65,9 +71,9 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         $request->validate([
-            'full_name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'user_role' => 'required|in:Admin,Staff,Photographer',
+            'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'user_role' => 'required|in:Admin,Staff,Photographer',
         ]);
         $user->update($request->only(['full_name', 'email', 'user_role']));
 

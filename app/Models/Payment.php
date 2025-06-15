@@ -13,9 +13,9 @@ class Payment extends Model
         'amount',
         'status',
     ];
+public function booking()
+{
+    return $this->belongsTo(Booking::class, 'booking_id');
+}
 
-    public function booking()
-    {
-        return $this->belongsTo(Booking::class, 'booking_id');
-    }
 }

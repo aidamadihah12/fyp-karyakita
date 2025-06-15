@@ -18,6 +18,7 @@ protected $fillable = [
     'user_id',
     'location',
     'location_url',
+    'photographer_id',
 ];
 
 
@@ -25,12 +26,6 @@ protected $fillable = [
     {
         return $this->belongsTo(Event::class);
     }
-
-    public function customer()
-    {
-        return $this->belongsTo(User::class, 'customer_id');
-    }
-
 
     public function freelancer()
     {
@@ -47,7 +42,7 @@ protected $fillable = [
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    
+
     public function payment()
 {
     return $this->hasOne(Payment::class, 'booking_id');
@@ -57,6 +52,11 @@ protected $fillable = [
 public function photographer()
 {
     return $this->belongsTo(User::class, 'photographer_id');
+}
+
+public function customer()
+{
+    return $this->belongsTo(User::class, 'user_id');
 }
 
 }

@@ -97,10 +97,7 @@
     <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.index') ? 'active' : '' }}">Manage Events</a>
     <a href="{{ route('admin.venues.index') }}" class="{{ request()->routeIs('admin.venues.*') ? 'active' : '' }}">Venues Listing</a>
     <a href="{{ route('admin.profit.analytics') }}" class="{{ request()->routeIs('admin.profit.analytics') ? 'active' : '' }}">Profit Analytics</a>
-    <a href="{{ route('admin.system.testing') }}" class="{{ request()->routeIs('admin.system.testing') ? 'active' : '' }}">System Testing</a>
-    <a href="{{ route('admin.liveview.index') }}" class="{{ request()->routeIs('admin.liveview.*') ? 'active' : '' }}">Live View</a>
     <a href="{{ route('admin.calendar') }}" class="{{ request()->routeIs('admin.calendar') ? 'active' : '' }}">📅 Calendar</a>
-    <a href="{{ route('admin.assignments.index') }}" class="{{ request()->routeIs('admin.assignments.*') ? 'active' : '' }}">📸 Assign Photographer</a>
 </nav>
 
 

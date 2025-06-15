@@ -47,15 +47,11 @@
     <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Home</a>
     <a href="{{ route('admin.bookings.index') }}" class="{{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">Manage Bookings</a>
     <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Manage Users</a>
-    <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">Manage Payments</a>
     <a href="{{ route('admin.reports') }}" class="{{ request()->routeIs('admin.reports') ? 'active' : '' }}">Reports</a>
     <a href="{{ route('admin.events.index') }}" class="{{ request()->routeIs('admin.events.index') ? 'active' : '' }}">Manage Events</a>
     <a href="{{ route('admin.venues.index') }}" class="{{ request()->routeIs('admin.venues.*') ? 'active' : '' }}">Venues Listing</a>
     <a href="{{ route('admin.profit.analytics') }}" class="{{ request()->routeIs('admin.profit.analytics') ? 'active' : '' }}">Profit Analytics</a>
-    <a href="{{ route('admin.system.testing') }}" class="{{ request()->routeIs('admin.system.testing') ? 'active' : '' }}">System Testing</a>
-    <a href="{{ route('admin.liveview.index') }}" class="{{ request()->routeIs('admin.liveview.*') ? 'active' : '' }}">Live View</a>
     <a href="{{ route('admin.calendar') }}" class="{{ request()->routeIs('admin.calendar') ? 'active' : '' }}">📅 Calendar</a>
-    <a href="{{ route('admin.assignments.index') }}" class="{{ request()->routeIs('admin.assignments.*') ? 'active' : '' }}">📸 Assign Photographer</a>
 </nav>
 
         <!-- Main content -->

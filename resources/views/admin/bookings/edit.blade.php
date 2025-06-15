@@ -34,26 +34,28 @@
         <div class="mb-3">
             <label>Status</label>
             <select name="status" class="form-control" required>
-                @foreach (['Pending', 'Confirmed', 'Completed', 'Cancelled', 'Assigned'] as $status)
+                @foreach (['Pending', 'Confirmed', 'Completed'] as $status)
                     <option value="{{ $status }}" {{ $booking->status == $status ? 'selected' : '' }}>{{ $status }}</option>
                 @endforeach
             </select>
         </div>
 
-        <div class="mb-3">
+<div class="mb-3">
     <label for="photographer_id">Assign Photographer</label>
     <select name="photographer_id" class="form-control">
         <option value="">-- Not Assigned --</option>
         @foreach ($photographers as $photographer)
-            <option value="{{ $photographer->id }}"
-                {{ old('photographer_id', $booking->photographer_id ?? '') == $photographer->id ? 'selected' : '' }}>
-                {{ $photographer->name }} ({{ ucfirst($photographer->user_role) }})
-            </option>
+<option value="{{ $photographer->id }}"
+    {{ old('photographer_id', $booking->photographer_id ?? '') == $photographer->id ? 'selected' : '' }}>
+    {{ $photographer->name ?? $photographer->name ?? 'Unnamed User' }}
+    ({{ ucfirst($photographer->user_role ?? 'N/A') }})
+</option>
+
         @endforeach
     </select>
-        </div>
-
 </div>
+
+
 
         <div class="mb-3">
             <label>Note</label>

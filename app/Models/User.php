@@ -45,4 +45,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(Event::class, 'customer_id');
     }
+
+
+public function bookingsAsPhotographer()
+{
+    return $this->hasMany(Booking::class, 'photographer_id');
+}
+
 }
