@@ -62,7 +62,8 @@ public function photographer()
 
 public function assignments()
 {
-    return $this->hasMany(Assignment::class);
+    return $this->hasMany(\App\Models\Booking::class, 'event_id')->whereNotNull('photographer_id');
 }
+
 
 }

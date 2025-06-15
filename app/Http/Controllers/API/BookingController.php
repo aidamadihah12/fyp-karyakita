@@ -25,7 +25,7 @@ public function store(Request $request)
 {
     $request->validate([
         'event_id' => 'required|exists:events,id',
-        'event_date' => 'required|date',
+        'date' => 'required|date',
         'status' => 'required|string|in:Pending,Confirmed,Completed',
         'note' => 'nullable|string',
         'location' => 'nullable|string',
@@ -37,7 +37,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date'    => $request->event_date,
+        'event_date' => $request->date,
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
