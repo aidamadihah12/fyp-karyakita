@@ -3,39 +3,48 @@
 @section('title', 'Freelance Dashboard')
 
 @section('content')
-<h2>Welcome, {{ auth()->user()->full_name }}</h2>
+<div class="container">
+    <h2 class="my-4">Welcome, {{ auth()->user()->full_name }}</h2>
 
-@if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-@endif
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Current Availability</h5>
-                <p class="card-text fs-3">{{ $availability ? 'Available' : 'Not Available' }}</p>
-                <a href="{{ route('freelance.availability.edit') }}" class="btn btn-light btn-sm">Update Availability</a>
+    <div class="row">
+
+        <!-- Assignments Card -->
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Your Assignments</h5>
+                    <p class="card-text">View and manage the assignments you've received.</p>
+                    <a href="{{ route('freelance.assignments') }}" class="btn btn-light btn-sm mt-2">View Assignments</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Your Assignments</h5>
-                <a href="{{ route('freelance.assignments') }}" class="btn btn-light btn-sm mt-3">View Assignments</a>
+        <!-- Upload Media Card -->
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Upload Media</h5>
+                    <p class="card-text">Submit media files for completed assignments.</p>
+                    <a href="{{ route('freelance.upload.media') }}" class="btn btn-light btn-sm mt-2">Upload Now</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Upload Media</h5>
-                <a href="{{ route('freelance.upload.media.form') }}" class="btn btn-light btn-sm mt-3">Upload Now</a>
+        <!-- Manage Bookings Card -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Bookings</h5>
+                    <p class="card-text">View bookings assigned to events you're part of.</p>
+                    <a href="{{ route('freelance.bookings.index') }}" class="btn btn-light btn-sm mt-2">View Bookings</a>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 @endsection

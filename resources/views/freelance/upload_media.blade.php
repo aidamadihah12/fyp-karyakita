@@ -28,18 +28,18 @@
 
 <form method="POST" action="{{ route('freelance.upload.media') }}" enctype="multipart/form-data">
     @csrf
+<div class="mb-3">
+    <label for="event_id" class="form-label">Event</label>
+    <select id="event_id" name="event_id" class="form-select" required>
+        <option value="">-- Select Event --</option>
+        @foreach($events as $event)
+            <option value="{{ $event->id }}">
+                {{ $event->event_type }} - {{ $event->event_date->format('d M Y') }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
-    <div class="mb-3">
-        <label for="event_id" class="form-label">Event</label>
-        <select id="event_id" name="event_id" class="form-select" required>
-            <option value="">-- Select Event --</option>
-            @foreach($events as $event)
-                <option value="{{ $event->id }}">
-                    {{ $event->name }} - {{ $event->date->format('d M Y') }}
-                </option>
-            @endforeach
-        </select>
-    </div>
 
     <div class="mb-3">
         <label for="media_files" class="form-label">Upload Media Files</label>

@@ -88,14 +88,13 @@
     <div class="content-area">
 
         <!-- Sidebar menu -->
-        <nav class="sidebar">
-            <a href="{{ route('freelance.dashboard') }}" class="{{ request()->routeIs('freelance.dashboard') ? 'active' : '' }}">Dashboard</a>
-            <a href="{{ route('freelance.availability.edit') }}" class="{{ request()->routeIs('freelance.availability.*') ? 'active' : '' }}">Update Availability</a>
-            <a href="{{ route('freelance.assignments') }}" class="{{ request()->routeIs('freelance.assignments*') ? 'active' : '' }}">Accept Assignment</a>
-            <a href="{{ route('freelance.upload.media.form') }}" class="{{ request()->routeIs('freelance.upload.media.*') ? 'active' : '' }}">Upload Media</a>
-            <a href="{{ route('freelance.calendar') }}" class="{{ request()->routeIs('freelance.calendar') ? 'active' : '' }}">📅 Calendar</a>
+<nav class="sidebar">
+    <a href="{{ route('freelance.dashboard') }}" class="{{ request()->routeIs('freelance.dashboard') ? 'active' : '' }}">Dashboard</a>
+    <a href="{{ route('freelance.bookings.index') }}" class="{{ request()->routeIs('freelance.bookings.index') ? 'active' : '' }}">Manage Bookings</a>
+    <a href="{{ route('freelance.upload.media') }}" class="{{ request()->routeIs('freelance.upload.media') ? 'active' : '' }}">Upload Media</a>
+    <a href="{{ route('freelance.calendar') }}" class="{{ request()->routeIs('freelance.calendar') ? 'active' : '' }}">📅 Calendar</a>
+</nav>
 
-        </nav>
 
         <!-- Main content -->
         <main class="main-content">

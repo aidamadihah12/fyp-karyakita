@@ -72,8 +72,6 @@ Route::middleware(['auth', 'role:Staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/{id}/edit', [StaffController::class, 'editBooking'])->name('bookings.edit');
     Route::put('/bookings/{id}', [StaffController::class, 'updateBooking'])->name('bookings.update');
-    Route::post('/bookings/{id}/accept', [StaffBookingController::class, 'acceptBooking'])->name('staff.bookings.accept');
-    Route::post('/bookings/{id}/reject', [StaffBookingController::class, 'rejectBooking'])->name('staff.bookings.reject');
 
 
 
@@ -91,19 +89,17 @@ Route::middleware(['auth', 'role:Staff'])->prefix('staff')->name('staff.')->grou
 
 // ================= FREELANCE ROUTES =================
 
-Route::middleware(['auth', 'role:Freelance'])->prefix('freelance')->name('freelance.')->group(function () {
+
+Route::middleware(['auth', 'role:freelance'])->prefix('freelance')->name('freelance.')->group(function () {
     Route::get('/dashboard', [FreelanceController::class, 'dashboard'])->name('dashboard');
-    Route::get('/calendar', [FreelanceController::class, 'calendar'])->name('calendar');
-
-    // Availability
-    Route::get('/availability', [FreelanceController::class, 'editAvailability'])->name('availability.edit');
-    Route::post('/availability', [FreelanceController::class, 'updateAvailability'])->name('availability.update');
-
-    // Assignments
     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
     Route::patch('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
 
-    // Media Upload
-    Route::get('/media/upload', [FreelanceController::class, 'showUploadForm'])->name('upload.media.form');
-    Route::post('/media/upload', [FreelanceController::class, 'uploadMedia'])->name('upload.media.submit');
+    Route::get('/bookings', [FreelanceController::class, 'bookingsIndex'])->name('bookings.index'); // ✅ This line
+
+    Route::get('/upload-media', [FreelanceController::class, 'uploadMediaForm'])->name('upload.media');
+    Route::post('/upload-media', [FreelanceController::class, 'uploadMedia'])->name('upload.media.store');
+
+    Route::get('/calendar', [FreelanceController::class, 'calendar'])->name('calendar');
 });
+

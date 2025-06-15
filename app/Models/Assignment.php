@@ -22,4 +22,9 @@ class Assignment extends Model
     {
         return $this->belongsTo(User::class, 'freelancer_id');
     }
+
+    public function booking()
+{
+    return $this->belongsTo(Booking::class);
+}
 }

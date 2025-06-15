@@ -59,4 +59,9 @@ public function customer()
     return $this->belongsTo(User::class, 'user_id');
 }
 
+public function assignments()
+{
+    return $this->hasMany(Assignment::class);
+}
+
 }

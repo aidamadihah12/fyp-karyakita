@@ -5,24 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Assignment;
 use App\Models\Event;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class FreelanceController extends Controller
 {
-    // ===== Dashboard =====
+    // ===== DASHBOARD =====
     public function dashboard()
     {
         $availability = auth()->user()->availability ?? false;
         return view('freelance.dashboard', compact('availability'));
-    }
-
-    // ===== Edit Availability =====
-    public function editAvailability()
-    {
-        $availability = auth()->user()->availability ?? false;
-        return view('freelance.availability', compact('availability'));
     }
 
     public function updateAvailability(Request $request)
@@ -38,37 +32,24 @@ class FreelanceController extends Controller
         return redirect()->route('freelance.dashboard')->with('success', 'Availability updated successfully.');
     }
 
-    // ===== View Assignments =====
+    // ===== BOOKINGS (ASSIGNMENTS) =====
     public function assignments()
     {
-        $assignments = Assignment::with('event')
-            ->where(function ($query) {
-                $query->where('freelancer_id', auth()->id())
-                      ->orWhere('status', 'pending');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+    $freelancerId = auth()->id(); // Ensure the logged-in freelance user
 
-        return view('freelance.assignments.index', compact('assignments'));
+    $assignments = Assignment::with('event') // eager load event data
+        ->where('freelancer_id', $freelancerId)
+        ->where('status', 'pending') // only show pending
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+
+    return view('freelance.assignments', compact('assignments'));
     }
 
-    // ===== Accept Assignment =====
-    public function acceptAssignment($id)
-    {
-        $assignment = Assignment::findOrFail($id);
 
-        if ($assignment->status === 'pending') {
-            $assignment->freelancer_id = auth()->id();
-            $assignment->status = 'accepted';
-            $assignment->save();
 
-            return redirect()->route('freelance.assignments')->with('success', 'Assignment accepted.');
-        }
-
-        return redirect()->route('freelance.assignments')->with('error', 'This assignment is no longer available.');
-    }
-
-    // ===== Upload Media Form =====
+    // ===== UPLOAD MEDIA =====
     public function uploadMediaForm()
     {
         $events = Event::whereHas('assignments', function ($query) {
@@ -82,7 +63,6 @@ class FreelanceController extends Controller
         return view('freelance.upload_media', compact('events'));
     }
 
-    // ===== Handle Media Upload =====
     public function uploadMedia(Request $request)
     {
         $request->validate([
@@ -95,7 +75,6 @@ class FreelanceController extends Controller
             foreach ($request->file('media_files') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $file->storeAs("media/event_{$request->event_id}", $filename, 'public');
-                // Optionally save metadata to a Media model if needed
             }
 
             return redirect()->route('freelance.upload.media')->with('success', 'Files uploaded successfully!');
@@ -104,7 +83,7 @@ class FreelanceController extends Controller
         return back()->with('error', 'No media files selected.');
     }
 
-    // ===== Calendar View =====
+    // ===== CALENDAR =====
     public function calendar()
     {
         $assignments = Assignment::with('event')
@@ -116,10 +95,32 @@ class FreelanceController extends Controller
             return [
                 'title' => $event->event_type . ' - ' . ($event->client_name ?? 'Client'),
                 'start' => $event->event_date,
-                'color' => $assignment->status === 'accepted' ? '#17a2b8' : '#ffc107',
+                'url' => route('freelance.assignments.edit', $assignment->id),
+                'color' => match($assignment->status) {
+                    'accepted' => '#28a745',
+                    'completed' => '#004085',
+                    default => '#ffc107',
+                },
             ];
         });
 
         return view('freelance.calendar', ['events' => $events]);
     }
+
+public function bookingsIndex()
+{
+    $freelancerId = auth()->id();
+
+    $bookings = Booking::with('event')
+        ->whereHas('event.assignments', function ($query) use ($freelancerId) {
+            $query->where('freelancer_id', $freelancerId);
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    return view('freelance.bookings.index', compact('bookings'));
+}
+
+
+
 }

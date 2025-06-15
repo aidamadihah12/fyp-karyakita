@@ -1,4 +1,4 @@
-@extends('layouts.staff')
+@extends('layouts.freelance')
 
 @section('title', 'Manage Bookings')
 
@@ -6,10 +6,9 @@
 <div class="container">
     <h1>Manage Bookings</h1>
 
-    <!-- Flash Messages -->
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
-    @elseif(session('error'))
+    @elseif (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
@@ -17,25 +16,28 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Event ID</th>
                 <th>Event Name</th>
                 <th>Event Date</th>
-                <th>Note</th>
-                <th>Status</th>
                 <th>Location</th>
+                <th>Status</th>
                 <th>Total (RM)</th>
-                <th>Actions</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($bookings as $booking)
+            @forelse ($bookings as $booking)
                 <tr>
                     <td>{{ $booking->id }}</td>
-                    <td>{{ $booking->event_id ?? 'N/A' }}</td>
                     <td>{{ $booking->event->name ?? 'N/A' }}</td>
-
-                    <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
-                    <td>{{ $booking->note ?? '-' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($booking->event->event_date ?? $booking->created_at)->format('d M Y') }}</td>
+                    <td>
+                        {{ $booking->event->location ?? '-' }}<br>
+                        @if ($booking->event->location_url)
+                            <a href="{{ $booking->event->location_url }}" target="_blank">View Map</a>
+                        @else
+                            N/A
+                        @endif
+                    </td>
                     <td>
                         <span class="badge
                             @if($booking->status == 'Pending') bg-warning
@@ -47,27 +49,12 @@
                             {{ $booking->status }}
                         </span>
                     </td>
-                    <td>
-                        {{ $booking->location ?? '-' }}<br>
-                        @if ($booking->location_url)
-                            <a href="{{ $booking->location_url }}" target="_blank">View Map</a>
-                        @else
-                            N/A
-                        @endif
-                    </td>
-                    <td>{{ number_format($booking->total_amount, 2) }}</td>
-
-
-
-
-                    <!-- Action Column -->
-                    <td>
-                        <a href="{{ route('staff.bookings.edit', $booking->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                    </td>
+                    <td>{{ number_format($booking->total_amount ?? 0, 2) }}</td>
+                    <td>{{ $booking->created_at->format('d M Y') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="text-center">No bookings found.</td>
+                    <td colspan="7" class="text-center">No bookings found.</td>
                 </tr>
             @endforelse
         </tbody>

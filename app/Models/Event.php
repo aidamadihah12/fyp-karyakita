@@ -36,4 +36,12 @@ class Event extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    // App\Models\Event.php
+
+public function assignments()
+{
+    return $this->hasMany(\App\Models\Assignment::class);
+}
+
 }
