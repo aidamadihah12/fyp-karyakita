@@ -21,19 +21,32 @@ class StaffController extends Controller
     // ===== BOOKINGS =====
     public function bookings()
     {
-        $bookings = Booking::with('customer')->paginate(10);
+        $bookings = Booking::with('customer')
+            ->where('assigned_staff_id', auth()->id())
+            ->paginate(10);
+
         return view('staff.bookings.index', compact('bookings'));
     }
 
     public function editBooking($id)
     {
         $booking = Booking::findOrFail($id);
+
+        // Ensure only assigned staff can edit
+        if ($booking->assigned_staff_id !== auth()->id()) {
+            return redirect()->route('staff.bookings')->with('error', 'Unauthorized access.');
+        }
+
         return view('staff.bookings.edit', compact('booking'));
     }
 
     public function updateBooking(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
+
+        if ($booking->assigned_staff_id !== auth()->id()) {
+            return redirect()->route('staff.bookings')->with('error', 'Unauthorized access.');
+        }
 
         $request->validate([
             'status' => 'required|in:Pending,Confirmed,Completed,Cancelled',
@@ -80,25 +93,32 @@ class StaffController extends Controller
         return view('staff.liveview');
     }
 
-    // ===== CALENDAR =====
-    public function calendar()
-    {
-        $bookings = Booking::with('customer')
-            ->where('assigned_staff_id', auth()->id())
-            ->get();
+   // ===== CALENDAR =====
+public function calendar()
+{
+    $bookings = Booking::with(['customer', 'event', 'photographer'])
+        ->where('assigned_staff_id', auth()->id())
+        ->get();
 
-        $events = $bookings->map(function ($b) {
-            return [
-                'title' => $b->event_type . ' - ' . ($b->customer->full_name ?? 'Unknown'),
-                'start' => $b->date,
-                'color' => match($b->status) {
-                    'Pending' => '#ffc107',
-                    'Confirmed' => '#28a745',
-                    default => '#6c757d',
-                }
-            ];
-        });
+    $events = $bookings->map(function ($b) {
+        $eventName = $b->event->name ?? $b->event_type ?? 'Unnamed Event';
+        $photographerName = $b->photographer->name ?? 'No Photographer';
+        $customerName = $b->customer->name ?? 'Unknown';
 
-        return view('staff.calendar', ['events' => $events]);
-    }
+        return [
+            'title' => "{$eventName} - {$photographerName}",
+            'start' => $b->event_date,
+            'url' => route('staff.bookings.edit', $b->id),
+            'color' => match($b->status) {
+                'Pending' => '#ffc107',
+                'Confirmed' => '#28a745',
+                'Completed' => '#004085',
+                default => '#6c757d',
+            },
+        ];
+    });
+
+    return view('staff.calendar', ['events' => $events]);
+}
+
 }

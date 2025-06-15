@@ -13,12 +13,12 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <!-- Bookings Table -->
     <table class="table table-striped table-bordered align-middle">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Event ID</th>
+                <th>Event Name</th>
                 <th>Event Date</th>
                 <th>Note</th>
                 <th>Status</th>
@@ -32,6 +32,7 @@
                 <tr>
                     <td>{{ $booking->id }}</td>
                     <td>{{ $booking->event_id ?? 'N/A' }}</td>
+                    <td>{{ $booking->event->name ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
                     <td>{{ $booking->note ?? '-' }}</td>
                     <td>
@@ -54,9 +55,13 @@
                         @endif
                     </td>
                     <td>{{ number_format($booking->total_amount, 2) }}</td>
+
+
+
+
+                    <!-- Action Column -->
                     <td>
                         <a href="{{ route('staff.bookings.edit', $booking->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                        {{-- Add more buttons if needed --}}
                     </td>
                 </tr>
             @empty
@@ -67,7 +72,6 @@
         </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="mt-3">
         {{ $bookings->links() }}
     </div>

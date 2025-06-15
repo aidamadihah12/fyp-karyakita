@@ -46,7 +46,7 @@
 
         <!-- Sidebar menu -->
 <nav class="sidebar">
-    
+     <a href="{{ route('staff.dashboard') }}" class="{{ request()->routeIs('staff.dashboard*') ? 'active' : '' }}">Home</a>
     <a href="{{ route('staff.bookings') }}" class="{{ request()->routeIs('staff.bookings*') ? 'active' : '' }}">Manage Booking</a>
     <a href="{{ route('staff.notifications.form') }}" class="{{ request()->routeIs('staff.notifications.*') ? 'active' : '' }}">Send Notification</a>
     <a href="{{ route('staff.calendar') }}" class="{{ request()->routeIs('staff.calendar') ? 'active' : '' }}">Calendar</a>

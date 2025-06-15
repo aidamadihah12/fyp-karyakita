@@ -72,6 +72,10 @@ Route::middleware(['auth', 'role:Staff'])->prefix('staff')->name('staff.')->grou
     Route::get('/bookings', [StaffController::class, 'bookings'])->name('bookings');
     Route::get('/bookings/{id}/edit', [StaffController::class, 'editBooking'])->name('bookings.edit');
     Route::put('/bookings/{id}', [StaffController::class, 'updateBooking'])->name('bookings.update');
+    Route::post('/bookings/{id}/accept', [StaffBookingController::class, 'acceptBooking'])->name('staff.bookings.accept');
+    Route::post('/bookings/{id}/reject', [StaffBookingController::class, 'rejectBooking'])->name('staff.bookings.reject');
+
+
 
     Route::get('/inquiries', [StaffController::class, 'inquiries'])->name('inquiries');
     Route::get('/inquiries/{id}', [StaffController::class, 'showInquiry'])->name('inquiries.show');
