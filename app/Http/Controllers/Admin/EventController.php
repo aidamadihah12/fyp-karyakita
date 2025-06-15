@@ -37,7 +37,7 @@ class EventController extends Controller
         // Create the event
         $event = Event::create([
     'name' => $validated['name'],
-    'event_date' => $validated['date'],
+    'date' => $validated['date'],,
     'price' => $validated['price'],
     'available_slots' => $validated['available_slots'],
     'location_url' => $validated['location_url'],
