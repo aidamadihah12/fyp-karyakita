@@ -36,11 +36,11 @@ class EventController extends Controller
 
         // Create the event
         $event = Event::create([
-    'name' => $validated['name'],
-    'date' => $validated['date'],,
-    'price' => $validated['price'],
-    'available_slots' => $validated['available_slots'],
-    'location_url' => $validated['location_url'],
+            'name' => $validated['name'],
+            'event_date' => $validated['date'],
+            'price' => $validated['price'],
+            'available_slots' => $validated['available_slots'],
+            'location_url' => $validated['location_url'],
         ]);
 
         // Handle the image upload if present
