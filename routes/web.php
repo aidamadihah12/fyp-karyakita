@@ -95,8 +95,7 @@ Route::middleware(['auth', 'role:freelance'])->prefix('freelance')->name('freela
     Route::get('/assignments', [FreelanceController::class, 'assignments'])->name('assignments');
     Route::patch('/assignments/{id}/accept', [FreelanceController::class, 'acceptAssignment'])->name('assignments.accept');
 
-    Route::get('/bookings', [FreelanceController::class, 'bookingsIndex'])->name('bookings.index'); // ✅ This line
-
+    Route::get('/bookings', [FreelanceController::class, 'bookingsIndex'])->name('bookings.index');
     Route::get('/upload-media', [FreelanceController::class, 'uploadMediaForm'])->name('upload.media');
     Route::post('/upload-media', [FreelanceController::class, 'uploadMedia'])->name('upload.media.store');
 

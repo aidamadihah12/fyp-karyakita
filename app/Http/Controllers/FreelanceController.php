@@ -32,22 +32,19 @@ class FreelanceController extends Controller
         return redirect()->route('freelance.dashboard')->with('success', 'Availability updated successfully.');
     }
 
-    // ===== BOOKINGS (ASSIGNMENTS) =====
+    // ===== VIEW ASSIGNED BOOKINGS =====
     public function assignments()
     {
-    $freelancerId = auth()->id(); // Ensure the logged-in freelance user
+        $freelancerId = auth()->id();
 
-    $assignments = Assignment::with('event') // eager load event data
-        ->where('freelancer_id', $freelancerId)
-        ->where('status', 'pending') // only show pending
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        $assignments = Assignment::with('event') // eager load related event
+            ->where('freelancer_id', $freelancerId)
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-
-    return view('freelance.assignments', compact('assignments'));
+        return view('freelance.assignments', compact('assignments'));
     }
-
-
 
     // ===== UPLOAD MEDIA =====
     public function uploadMediaForm()
@@ -83,7 +80,7 @@ class FreelanceController extends Controller
         return back()->with('error', 'No media files selected.');
     }
 
-    // ===== CALENDAR =====
+    // ===== CALENDAR VIEW =====
     public function calendar()
     {
         $assignments = Assignment::with('event')
@@ -96,7 +93,7 @@ class FreelanceController extends Controller
                 'title' => $event->event_type . ' - ' . ($event->client_name ?? 'Client'),
                 'start' => $event->event_date,
                 'url' => route('freelance.assignments.edit', $assignment->id),
-                'color' => match($assignment->status) {
+                'color' => match ($assignment->status) {
                     'accepted' => '#28a745',
                     'completed' => '#004085',
                     default => '#ffc107',
@@ -107,20 +104,18 @@ class FreelanceController extends Controller
         return view('freelance.calendar', ['events' => $events]);
     }
 
-public function bookingsIndex()
-{
-    $freelancerId = auth()->id();
+    // ===== BOOKING HISTORY (with event info) =====
+    public function bookingsIndex()
+    {
+        $freelancerId = auth()->id();
 
-    $bookings = Booking::with('event')
-        ->whereHas('event.assignments', function ($query) use ($freelancerId) {
-            $query->where('freelancer_id', $freelancerId);
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        $bookings = Booking::with(['event', 'user', 'venue'])
+            ->whereHas('event.assignments', function ($query) use ($freelancerId) {
+                $query->where('freelancer_id', $freelancerId);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-    return view('freelance.bookings.index', compact('bookings'));
-}
-
-
-
+        return view('freelance.bookings.index', compact('bookings'));
+    }
 }
