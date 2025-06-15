@@ -37,7 +37,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->date,
+        'event_date'    => $request->event_date,
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
