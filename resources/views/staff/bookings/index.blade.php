@@ -6,35 +6,35 @@
 <div class="container">
     <h1>Manage Bookings</h1>
 
-    <!-- Flash Messages -->
+    <!-- Flash messages -->
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
-    @elseif(session('error'))
+    @elseif (session('error'))
         <div class="alert alert-danger">{{ session('error') }}</div>
     @endif
 
-    <table class="table table-striped table-bordered align-middle">
+    <!-- Bookings Table -->
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Event ID</th>
-                <th>Event Name</th>
-                <th>Event Date</th>
+                <th>Booking ID</th>
+                <th>Customer</th>
+                <th>Event</th>
+                <th>Date</th>
                 <th>Note</th>
                 <th>Status</th>
                 <th>Location</th>
-                <th>Total (RM)</th>
-                <th>Actions</th>
+                <th>Photographer</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($bookings as $booking)
+            @forelse ($bookings as $booking)
                 <tr>
                     <td>{{ $booking->id }}</td>
-                    <td>{{ $booking->event_id ?? 'N/A' }}</td>
+                    <td>{{ $booking->user->name ?? 'N/A' }}</td>
                     <td>{{ $booking->event->name ?? 'N/A' }}</td>
-
-                    <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('Y-m-d') }}</td>
                     <td>{{ $booking->note ?? '-' }}</td>
                     <td>
                         <span class="badge
@@ -50,19 +50,21 @@
                     <td>
                         {{ $booking->location ?? '-' }}<br>
                         @if ($booking->location_url)
-                            <a href="{{ $booking->location_url }}" target="_blank">View Map</a>
+                            <a href="{{ $booking->location_url }}" target="_blank" rel="noopener noreferrer">View Map</a>
                         @else
                             N/A
                         @endif
                     </td>
-                    <td>{{ number_format($booking->total_amount, 2) }}</td>
-
-
-
-
-                    <!-- Action Column -->
                     <td>
-                        <a href="{{ route('staff.bookings.edit', $booking->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        @if($booking->photographer)
+                            {{ $booking->photographer->name }}<br>
+                            <small class="text-muted">({{ ucfirst($booking->photographer->user_role) }})</small>
+                        @else
+                            <span class="text-muted">Not Assigned</span>
+                        @endif
+                    </td>
+                    <td>
+                        <a href="{{ route('staff.bookings.edit', $booking->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     </td>
                 </tr>
             @empty
@@ -73,8 +75,7 @@
         </tbody>
     </table>
 
-    <div class="mt-3">
-        {{ $bookings->links() }}
-    </div>
+    <!-- Pagination -->
+    {{ $bookings->links() }}
 </div>
 @endsection

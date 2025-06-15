@@ -18,6 +18,7 @@ protected $fillable = [
     'user_id',
     'location',
     'location_url',
+    'photographer_id',
 ];
 
 
@@ -57,6 +58,11 @@ protected $fillable = [
 public function photographer()
 {
     return $this->belongsTo(User::class, 'photographer_id');
+}
+
+public function assignments()
+{
+    return $this->hasMany(Assignment::class);
 }
 
 }

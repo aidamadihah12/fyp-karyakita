@@ -123,8 +123,7 @@ public function update(Request $request, $id)
         'photographer_id' => $validated['photographer_id'] ?? null,
 
     ]);
-
-
+    
     return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully.');
 
 }
@@ -200,13 +199,6 @@ public function user()
 {
     return $this->belongsTo(User::class, 'user_id');
 }
-
-public function getFullNameAttribute()
-{
-    $userFullName = $b->user->name ?? 'No Customer';
-
-}
-
 
 
 }
