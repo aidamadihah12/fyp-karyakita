@@ -37,7 +37,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->event_date,
+        'event_date' => \Carbon\Carbon::parse($request->event_date)->toDateString(), // returns YYYY-MM-DD
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
@@ -76,7 +76,7 @@ public function update(Request $request, $id)
         'user_id' => $request->customer_id,
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->event_date,
+        'event_date' => \Carbon\Carbon::parse($request->event_date)->toDateString(), // returns YYYY-MM-DD
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
