@@ -21,9 +21,11 @@ protected $fillable = [
     'photographer_id',
 ];
 
+// Booking.php
 protected $casts = [
-    'event_date' => 'date:Y-m-d', // this ensures JSON returns correct format
+    'event_date' => 'datetime:Y-m-d\TH:i:s',
 ];
+
 
     public function event()
     {
