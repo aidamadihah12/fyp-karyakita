@@ -11,19 +11,24 @@ use Illuminate\Support\Carbon;
 class BookingController extends Controller
 {
     // GET: List all bookings with relations
-    public function index()
-    {
-        $bookings = Booking::with([
-            'user:id,name,email',
-            'venue:id,name,address',
-            'event:id,name,type,price' // include event details if needed
-        ])->get();
+public function index()
+{
+    try {
+        $bookings = Booking::with(['user', 'event', 'venue', 'photographer'])->get();
 
         return response()->json([
             'success' => true,
             'data' => $bookings,
         ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Server Error',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     // POST: Store a new booking
     public function store(Request $request)
