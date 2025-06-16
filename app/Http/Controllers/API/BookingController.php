@@ -12,16 +12,12 @@ class BookingController extends Controller
     // Get all bookings with relations
     public function index()
     {
-            $bookings = Booking::with(['user', 'venue'])->get();
+        $bookings = Booking::with(['user:id,name,email', 'venue:id,name,address'])->get();
 
-    foreach ($bookings as $booking) {
-        \Log::info('Booking ID: ' . $booking->id . ', Event Date: ' . $booking->event_date);
-    }
-
-    return response()->json([
-        'success' => true,
-        'data' => $bookings,
-    ]);
+        return response()->json([
+            'success' => true,
+            'data' => $bookings,
+        ]);
     }
 
     // Store a new booking
@@ -41,7 +37,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => \Carbon\Carbon::parse($request->event_date)->toDateString(), // returns YYYY-MM-DD
+        'event_date' => $request->event_date,
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
