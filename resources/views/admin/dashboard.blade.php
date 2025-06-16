@@ -175,8 +175,8 @@
                             @forelse($recentBookings as $booking)
                                 <tr>
                                     <td>{{ $booking->id }}</td>
-                                    <td>{{ optional($booking->user)->full_name ?? 'N/A' }}</td>
-                                    <td>{{ $booking->event_type }}</td>
+                                    <td>{{ optional($booking->user)->name ?? 'N/A' }}</td>
+                                    <td>{{ $booking->event->name ?? 'N/A' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($booking->event_date)->format('d M Y') }}</td>
                                     <td>
                                         <span class="badge

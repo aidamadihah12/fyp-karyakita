@@ -17,10 +17,12 @@ class DashboardController extends Controller
         $totalPayments = Payment::sum('amount');
         $pendingBookings = Booking::where('status', 'Pending')->count();
 
-        $recentBookings = Booking::with('user')
-                            ->orderBy('created_at', 'desc')
-                            ->limit(5)
-                            ->get();
+        $recentBookings = Booking::with(['user', 'event'])
+                         ->orderBy('created_at', 'desc')
+                         ->limit(5)
+                         ->get();
+
+
 
         return view('admin.dashboard', compact(
             'usersCount', 'bookingsCount', 'totalPayments', 'pendingBookings', 'recentBookings'
