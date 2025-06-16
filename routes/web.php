@@ -99,6 +99,10 @@ Route::middleware(['auth', 'role:freelance'])->prefix('freelance')->name('freela
     Route::get('/upload-media', [FreelanceController::class, 'uploadMediaForm'])->name('upload.media');
     Route::post('/upload-media', [FreelanceController::class, 'uploadMedia'])->name('upload.media.store');
 
+    Route::get('/freelance/bookings', [FreelanceController::class, 'manageBookings'])
+    ->middleware(['auth', 'role:freelance']) // adjust middleware if needed
+    ->name('freelance.bookings.manage');
+
     Route::get('/calendar', [FreelanceController::class, 'calendar'])->name('calendar');
 });
 

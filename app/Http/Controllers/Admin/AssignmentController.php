@@ -37,4 +37,21 @@ class AssignmentController extends Controller
 
         return redirect()->route('assignments.index')->with('success', 'Freelancer assigned successfully.');
     }
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'booking_id' => 'required|exists:bookings,id',
+        'freelancer_id' => 'required|exists:users,id', // or freelancers table
+    ]);
+
+    Assignment::create([
+        'booking_id' => $request->booking_id,
+        'freelancer_id' => $request->freelancer_id,
+        'status' => 'pending',
+    ]);
+
+    return redirect()->back()->with('success', 'Freelancer assigned successfully.');
+}
+
 }

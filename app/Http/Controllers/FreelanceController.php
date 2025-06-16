@@ -118,4 +118,11 @@ class FreelanceController extends Controller
 
         return view('freelance.bookings.index', compact('bookings'));
     }
+
+
+    public function manageBookings()
+{
+    $bookings = Booking::with('event')->latest()->paginate(10);
+    return view('freelance.bookings.manage', compact('bookings'));
+}
 }
