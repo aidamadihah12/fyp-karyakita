@@ -114,7 +114,7 @@ public function update(Request $request, $id)
         'user_id'       => $validated['customer_id'],
         'event_id'      => $event->id,
         'event_type'    => $event->type ?? 'N/A',
-        'event_date'    => $validated['date'],
+        'event_date'    => $validated['event_date'],
         'note'          => $validated['note'] ?? null,
         'total_amount'  => $event->price,
         'status'        => $validated['status'],
