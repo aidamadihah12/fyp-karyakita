@@ -9,10 +9,12 @@ use App\Models\Event;
 class EventApiController extends Controller
 {
     // GET /api/events
-    public function index()
-    {
-        return response()->json(Event::all(), 200);
-    }
+public function index()
+{
+    $events = Event::latest()->get();
+    return response()->json(['success' => true, 'data' => $events], 200);
+}
+
 
     // GET /api/events/{id}
     public function show($id)
