@@ -23,7 +23,9 @@ class Event extends Model
     ];
 
     // Use correct cast for event_date
-    protected $dates = ['event_date'];
+    protected $casts = [
+    'event_date' => 'date:Y-m-d', // Ensures proper formatting
+    ];
 
     // Event belongs to a customer (user)
     public function customer()
