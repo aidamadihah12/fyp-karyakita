@@ -36,6 +36,7 @@ class EventApiController extends Controller
             'location' => 'nullable|string',
             'package_type' => 'nullable|string',
             'customer_id' => 'nullable|exists:users,id',
+            'venue_id' => 'nullable|exists:venues,id',
         ]);
 
         $event = Event::create($validated);
@@ -60,6 +61,7 @@ class EventApiController extends Controller
             'location' => 'nullable|string',
             'package_type' => 'nullable|string',
             'customer_id' => 'nullable|exists:users,id',
+            'venue_id' => 'nullable|exists:venues,id' 
         ]);
 
         $event->update($validated);
