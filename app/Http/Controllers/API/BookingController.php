@@ -25,7 +25,7 @@ public function store(Request $request)
 {
     $request->validate([
         'event_id' => 'required|exists:events,id',
-        'date' => 'required|date',
+        'event_date' => 'required|date',
         'status' => 'required|string|in:Pending,Confirmed,Completed',
         'note' => 'nullable|string',
         'location' => 'nullable|string',
@@ -58,7 +58,7 @@ public function update(Request $request, $id)
     $request->validate([
         'customer_id' => 'required|exists:users,id',
         'event_id' => 'required|exists:events,id',
-        'date' => 'required|date',
+        'event_date' => 'required|date',
         'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
         'note' => 'nullable|string',
         'location' => 'nullable|string',

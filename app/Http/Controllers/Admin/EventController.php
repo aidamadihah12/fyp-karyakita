@@ -27,7 +27,7 @@ class EventController extends Controller
         // Validate the form data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'date' => 'required|date',
+            'event_date' => 'required|date',
             'price' => 'required|integer|min:1',
             'available_slots' => 'required|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -37,7 +37,7 @@ class EventController extends Controller
         // Create the event
         $event = Event::create([
             'name' => $validated['name'],
-            'date' => $validated['date'],
+            'event_date' => $validated['event_date'],
             'price' => $validated['price'],
             'available_slots' => $validated['available_slots'],
             'location_url' => $request->location_url,
@@ -68,7 +68,7 @@ class EventController extends Controller
     // Validate the incoming data
     $validated = $request->validate([
         'name' => 'required|string|max:255',
-        'date' => 'required|date',
+        'event_date' => 'required|date',
         'price' => 'required|integer|min:1',
         'available_slots' => 'required|integer|min:0',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -80,7 +80,7 @@ class EventController extends Controller
 
     // Update the event data
     $event->name = $validated['name'];
-    $event->date = $validated['date'];
+    $event->event_date = $validated['event_date'];
     $event->price = $validated['price'];
     $event->available_slots = $validated['available_slots'];
     $event->location_url = $request->location_url;

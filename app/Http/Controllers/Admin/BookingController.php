@@ -96,7 +96,7 @@ public function update(Request $request, $id)
     $validated = $request->validate([
         'customer_id' => 'required|exists:users,id',
         'event_id' => 'required|exists:events,id',
-        'date' => 'required|date',
+        'event_date' => 'required|date',
         'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
         'note' => 'nullable|string',
         'location' => 'nullable|string|max:255',
@@ -123,7 +123,7 @@ public function update(Request $request, $id)
         'photographer_id' => $validated['photographer_id'] ?? null,
 
     ]);
-    
+
     return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully.');
 
 }
