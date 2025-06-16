@@ -9,14 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-public function up()
-{
-    Schema::table('events', function (Blueprint $table) {
-        $table->unsignedBigInteger('customer_id')->nullable();
-        $table->date('event_date')->nullable();
-    });
-}
+    public function up(): void
+    {
+        Schema::table('events', function (Blueprint $table) {
+            if (!Schema::hasColumn('events', 'customer_id')) {
+                $table->unsignedBigInteger('customer_id')->nullable();
+            }
 
+            if (!Schema::hasColumn('events', 'event_date')) {
+                $table->date('event_date')->nullable();
+            }
+        });
+    }
 
     /**
      * Reverse the migrations.
@@ -24,7 +28,13 @@ public function up()
     public function down(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('events', 'customer_id')) {
+                $table->dropColumn('customer_id');
+            }
+
+            if (Schema::hasColumn('events', 'event_date')) {
+                $table->dropColumn('event_date');
+            }
         });
     }
 };
