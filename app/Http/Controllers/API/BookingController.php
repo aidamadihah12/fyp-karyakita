@@ -30,6 +30,7 @@ public function store(Request $request)
         'note' => 'nullable|string',
         'location' => 'nullable|string',
         'location_url' => 'nullable|url',
+        'venue_id' => 'nullable|exists:venues,id',
     ]);
 
     $event = Event::findOrFail($request->event_id);
@@ -44,6 +45,7 @@ public function store(Request $request)
         'user_id' => auth()->id() ?? null,
         'location' => $request->location,
         'location_url' => $request->location_url,
+        'venue_id' => $request->venue_id,
     ]);
 
     return response()->json([
@@ -63,6 +65,7 @@ public function update(Request $request, $id)
         'note' => 'nullable|string',
         'location' => 'nullable|string',
         'location_url' => 'nullable|url',
+        'venue_id' => 'nullable|exists:venues,id',
     ]);
 
     $booking = Booking::find($id);
@@ -82,6 +85,7 @@ public function update(Request $request, $id)
         'status' => $request->status,
         'location' => $request->location,
         'location_url' => $request->location_url,
+        'venue_id' => $request->venue_id,
     ]);
 
     return response()->json([
