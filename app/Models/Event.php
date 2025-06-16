@@ -38,4 +38,10 @@ class Event extends Model
     {
         return $this->hasMany(Booking::class);
     }
+
+    public function assignments()
+{
+    return $this->hasMany(Assignment::class);
+}
+
 }
