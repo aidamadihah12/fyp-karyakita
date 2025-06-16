@@ -21,6 +21,9 @@ protected $fillable = [
     'photographer_id',
 ];
 
+protected $casts = [
+    'event_date' => 'date:Y-m-d', // this ensures JSON returns correct format
+];
 
     public function event()
     {
