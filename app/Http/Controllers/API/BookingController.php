@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-    // GET /api/bookings
+    // Get all bookings with relations
     public function index()
     {
-        $bookings = Booking::with(['user:id,name,email', 'event'])->get();
+        $bookings = Booking::with(['user:id,name,email', 'venue:id,name,address'])->get();
 
         return response()->json([
             'success' => true,
@@ -20,79 +20,79 @@ class BookingController extends Controller
         ]);
     }
 
-    // POST /api/bookings
-    public function store(Request $request)
-    {
-        $request->validate([
-            'event_id' => 'required|exists:events,id',
-            'event_date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed',
-            'note' => 'nullable|string',
-            'location' => 'nullable|string',
-            'location_url' => 'nullable|url',
-        ]);
+    // Store a new booking
+public function store(Request $request)
+{
+    $request->validate([
+        'event_id' => 'required|exists:events,id',
+        'date' => 'required|date',
+        'status' => 'required|string|in:Pending,Confirmed,Completed',
+        'note' => 'nullable|string',
+        'location' => 'nullable|string',
+        'location_url' => 'nullable|url',
+    ]);
 
-        $event = Event::findOrFail($request->event_id);
+    $event = Event::findOrFail($request->event_id);
 
-        $booking = Booking::create([
-            'event_id' => $event->id,
-            'event_type' => $event->type ?? 'N/A',
-            'event_date' => $request->event_date,
-            'note' => $request->note,
-            'total_amount' => $event->price,
-            'status' => $request->status,
-            'user_id' => auth()->id() ?? null,
-            'location' => $request->location,
-            'location_url' => $request->location_url,
-        ]);
+    $booking = Booking::create([
+        'event_id' => $event->id,
+        'event_type' => $event->type ?? 'N/A',
+        'event_date' => $request->date,
+        'note' => $request->note,
+        'total_amount' => $event->price,
+        'status' => $request->status,
+        'user_id' => auth()->id() ?? null,
+        'location' => $request->location,
+        'location_url' => $request->location_url,
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking created successfully',
-            'data' => $booking,
-        ], 201);
+    return response()->json([
+        'success' => true,
+        'message' => 'Booking created successfully',
+        'data' => $booking,
+    ], 201);
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'customer_id' => 'required|exists:users,id',
+        'event_id' => 'required|exists:events,id',
+        'date' => 'required|date',
+        'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
+        'note' => 'nullable|string',
+        'location' => 'nullable|string',
+        'location_url' => 'nullable|url',
+    ]);
+
+    $booking = Booking::find($id);
+    if (!$booking) {
+        return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
     }
 
-    // PUT /api/bookings/{id}
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'customer_id' => 'required|exists:users,id',
-            'event_id' => 'required|exists:events,id',
-            'event_date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed',
-            'note' => 'nullable|string',
-            'location' => 'nullable|string',
-            'location_url' => 'nullable|url',
-        ]);
+    $event = Event::findOrFail($request->event_id);
 
-        $booking = Booking::find($id);
-        if (!$booking) {
-            return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
-        }
+    $booking->update([
+        'user_id' => $request->customer_id,
+        'event_id' => $event->id,
+        'event_type' => $event->type ?? 'N/A',
+        'event_date' => $request->date,
+        'note' => $request->note,
+        'total_amount' => $event->price,
+        'status' => $request->status,
+        'location' => $request->location,
+        'location_url' => $request->location_url,
+    ]);
 
-        $event = Event::findOrFail($request->event_id);
+    return response()->json([
+        'success' => true,
+        'message' => 'Booking updated successfully',
+        'data' => $booking,
+    ]);
+}
 
-        $booking->update([
-            'user_id' => $request->customer_id,
-            'event_id' => $event->id,
-            'event_type' => $event->type ?? 'N/A',
-            'event_date' => $request->event_date,
-            'note' => $request->note,
-            'total_amount' => $event->price,
-            'status' => $request->status,
-            'location' => $request->location,
-            'location_url' => $request->location_url,
-        ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking updated successfully',
-            'data' => $booking,
-        ]);
-    }
-
-    // DELETE /api/bookings/{id}
+    // Delete a booking
     public function destroy($id)
     {
         $booking = Booking::find($id);
