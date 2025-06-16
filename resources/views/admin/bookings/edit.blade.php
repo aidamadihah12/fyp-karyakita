@@ -28,7 +28,7 @@
 
         <div class="mb-3">
             <label>Date</label>
-            <input type="date" name="date" class="form-control" value="{{ $booking->event_date }}" required>
+           <input type="date" name="event_date" id="event_date" class="form-control" value="{{ old('event_date') }}" required>
         </div>
 
         <div class="mb-3">
