@@ -31,7 +31,7 @@
         <!-- Event Date -->
         <div class="form-group">
             <label for="date">Event Date</label>
-            <input name="date" type="date" class="form-control" value="{{ old('date', \Carbon\Carbon::parse($event->date)->format('Y-m-d')) }}" required>
+            <input type="date" name="event_date" class="form-control" value="{{ old('event_date', $event->event_date ?? '') }}">
         </div>
 
         <!-- Event Price -->

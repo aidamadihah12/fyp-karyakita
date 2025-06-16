@@ -20,7 +20,7 @@
         </div>
         <div class="form-group">
             <label>Date</label>
-            <input name="date" type="date" class="form-control" value="{{ $event->date }}" required>
+            <input type="date" name="event_date" class="form-control" value="{{ old('event_date', $event->event_date ?? '') }}">
         </div>
         <div class="form-group">
             <label>Available Slots</label>

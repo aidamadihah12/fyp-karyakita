@@ -13,7 +13,7 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('name');  // Event name
-            $table->date('date');    // Event date
+            $table->date('event_date');    // Event date
             $table->integer('price');  // Event price
             $table->integer('available_slots');  // Available slots for the event
             $table->string('image')->nullable();  // Image URL, nullable

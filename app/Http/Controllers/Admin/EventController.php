@@ -27,7 +27,7 @@ class EventController extends Controller
         // Validate the form data
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'date' => 'required|date',
+            'event_date' => 'required|date',
             'price' => 'required|integer|min:1',
             'available_slots' => 'required|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -37,7 +37,7 @@ class EventController extends Controller
         // Create the event
         $event = Event::create([
             'name' => $validated['name'],
-            'date' => $validated['date'],
+            'event_date' => $validated['event_date'],
             'price' => $validated['price'],
             'available_slots' => $validated['available_slots'],
             'location_url' => $request->location_url,
@@ -57,71 +57,55 @@ class EventController extends Controller
     // Show the form for editing a single event
     public function edit($id)
     {
-        // Retrieve the event by ID
-        $event = Event::findOrFail($id);  // Ensure the event exists
+        $event = Event::findOrFail($id);
         return view('admin.events.edit', compact('event'));
     }
 
     // Update a single event
     public function update(Request $request, $id)
-{
-    // Validate the incoming data
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'date' => 'required|date',
-        'price' => 'required|integer|min:1',
-        'available_slots' => 'required|integer|min:0',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'location_url' => 'nullable|url|max:255',
-    ]);
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'event_date' => 'required|date',
+            'price' => 'required|integer|min:1',
+            'available_slots' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'location_url' => 'nullable|url|max:255',
+        ]);
 
-    // Find the event by ID
-    $event = Event::findOrFail($id);
+        $event = Event::findOrFail($id);
+        $event->name = $validated['name'];
+        $event->event_date = $validated['event_date'];
+        $event->price = $validated['price'];
+        $event->available_slots = $validated['available_slots'];
+        $event->location_url = $request->location_url;
 
-    // Update the event data
-    $event->name = $validated['name'];
-    $event->date = $validated['date'];
-    $event->price = $validated['price'];
-    $event->available_slots = $validated['available_slots'];
-    $event->location_url = $request->location_url;
+        if ($request->hasFile('image')) {
+            if ($event->image) {
+                \Storage::delete('public/' . $event->image);
+            }
 
-    // Handle the image upload if a new image is uploaded
-    if ($request->hasFile('image')) {
-        // Delete the old image if it exists
-        if ($event->image) {
-            \Storage::delete('public/' . $event->image);
+            $imagePath = $request->file('image')->store('events', 'public');
+            $event->image = $imagePath;
         }
 
-        // Store the new image
-        $imagePath = $request->file('image')->store('events', 'public');
-        $event->image = $imagePath;
+        $event->save();
+
+        return redirect()->route('admin.events.index')->with('success', 'Event updated successfully');
     }
-
-    // Save the updated event
-    $event->save();
-
-    // Redirect with success message
-    return redirect()->route('admin.events.index')->with('success', 'Event updated successfully');
-}
 
     // Show the details of a single event
     public function show($id)
     {
-        // Retrieve the event by ID
-        $event = Event::findOrFail($id);  // Ensure the event exists
-
-        // Return the event details view and pass the event data
+        $event = Event::findOrFail($id);
         return view('admin.events.show', compact('event'));
     }
-        public function destroy($id)
+
+    // Delete a single event
+    public function destroy($id)
     {
-        // Find the event by ID
         $event = Event::findOrFail($id);
-
-        // Delete the event
         $event->delete();
-
-        // Redirect back to the events index page with a success message
         return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully');
     }
 }
