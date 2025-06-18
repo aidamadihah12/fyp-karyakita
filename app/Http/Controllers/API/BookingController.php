@@ -3,112 +3,134 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Event;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Venue;
 
 class BookingController extends Controller
 {
-    // Get all bookings with relations
+    /**
+     * Get all bookings with related models.
+     */
     public function index()
     {
-        $bookings = Booking::with(['user:id,name,email', 'venue:id,name,address'])->get();
+    $bookings = Booking::with(['event', 'user', 'venue'])
+            ->get()
+            ->map(function ($booking) {
+                return $this->formatBooking($booking);
+            });
 
         return response()->json([
             'success' => true,
-            'data' => $bookings,
+            'data' => $bookings
         ]);
     }
 
-    // Store a new booking
-public function store(Request $request)
-{
-    $request->validate([
-        'event_id' => 'required|exists:events,id',
-        'event_date' => 'required|date',
-        'status' => 'required|string|in:Pending,Confirmed,Completed',
-        'note' => 'nullable|string',
-        'location' => 'nullable|string',
-        'location_url' => 'nullable|url',
-        'venue_id' => 'nullable|exists:venues,id',
-    ]);
+    /**
+     * Show a specific booking.
+     */
+    public function show($id)
+    {
+        $booking = Booking::with(['event', 'venue'])->findOrFail($id);
 
-    $event = Event::findOrFail($request->event_id);
-
-    $booking = Booking::create([
-        'event_id' => $event->id,
-        'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->date,
-        'note' => $request->note,
-        'total_amount' => $event->price,
-        'status' => $request->status,
-        'user_id' => auth()->id() ?? null,
-        'location' => $request->location,
-        'location_url' => $request->location_url,
-        'venue_id' => $request->venue_id,
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Booking created successfully',
-        'data' => $booking,
-    ], 201);
-}
-
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'customer_id' => 'required|exists:users,id',
-        'event_id' => 'required|exists:events,id',
-        'event_date' => 'required|date',
-        'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
-        'note' => 'nullable|string',
-        'location' => 'nullable|string',
-        'location_url' => 'nullable|url',
-        'venue_id' => 'nullable|exists:venues,id',
-    ]);
-
-    $booking = Booking::find($id);
-    if (!$booking) {
-        return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatBooking($booking)
+        ]);
     }
 
-    $event = Event::findOrFail($request->event_id);
+    /**
+     * Create a new booking.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'event_id' => 'required|exists:events,id',
+            'venue_id' => 'required|exists:venues,id',
+            'event_type' => 'required|string',
+            'status' => 'nullable|string',
+            'total_amount' => 'nullable|string',
+            'event_date' => 'required|date',
+            'location' => 'nullable|string',
+            'location_url' => 'nullable|string',
+            'note' => 'nullable|string',
+        ]);
 
-    $booking->update([
-        'user_id' => $request->customer_id,
-        'event_id' => $event->id,
-        'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->date,
-        'note' => $request->note,
-        'total_amount' => $event->price,
-        'status' => $request->status,
-        'location' => $request->location,
-        'location_url' => $request->location_url,
-        'venue_id' => $request->venue_id,
-    ]);
+        $booking = Booking::create($validated);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Booking updated successfully',
-        'data' => $booking,
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatBooking($booking->load('event', 'venue'))
+        ]);
+    }
 
+    /**
+     * Update a booking.
+     */
+    public function update(Request $request, $id)
+    {
+        $booking = Booking::findOrFail($id);
 
-    // Delete a booking
+        $booking->update($request->all());
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatBooking($booking->load('event', 'venue'))
+        ]);
+    }
+
+    /**
+     * Delete a booking.
+     */
     public function destroy($id)
     {
-        $booking = Booking::find($id);
-        if (!$booking) {
-            return response()->json(['success' => false, 'message' => 'Booking not found'], 404);
-        }
-
+        $booking = Booking::findOrFail($id);
         $booking->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking deleted successfully',
-        ]);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Format a booking for API response.
+     */
+    private function formatBooking($booking)
+    {
+        return [
+            'id' => $booking->id,
+            'user_id' => $booking->user_id,
+            'event_id' => $booking->event_id,
+            'venue_id' => $booking->venue_id,
+            'event_type' => $booking->event_type,
+            'assigned_staff_id' => $booking->assigned_staff_id,
+            'status' => $booking->status,
+            'total_amount' => $booking->total_amount,
+            'event_date' => $booking->event_date,
+            'location' => $booking->location,
+            'location_url' => $booking->location_url,
+            'note' => $booking->note,
+            'created_at' => $booking->created_at,
+            'updated_at' => $booking->updated_at,
+            'customer' => $booking->user_id,
+            'freelancer' => $booking->freelancer_id ?? null,
+
+            // Nested Event object
+                'event' => $booking->event ? [
+                'id' => $booking->event->id,
+                'name' => $booking->event->name,
+                'date' => $booking->event->date,
+                'price' => $booking->event->price,
+                'available_slots' => $booking->event->available_slots,
+                'image' => $booking->event->image,
+                'created_at' => $booking->event->created_at,
+                'updated_at' => $booking->event->updated_at,
+                'desc' => $booking->event->desc,
+                'status' => $booking->event->status,
+                'customer_id' => $booking->event->customer_id,
+                'event_date' => $booking->event->event_date,
+            ] : null,
+        ];
     }
 }

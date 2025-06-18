@@ -45,7 +45,7 @@ protected $casts = [
 
 public function venue()
 {
-    return $this->belongsTo(\App\Models\Venue::class, 'venue_id');
+    return $this->belongsTo(Venue::class);
 }
 
         public function user()
