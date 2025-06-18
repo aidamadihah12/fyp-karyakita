@@ -24,6 +24,7 @@ class BookingController extends Controller
 public function store(Request $request)
 {
     $request->validate([
+        'user_id' => 'required|integer|exists:users,id',
         'event_id' => 'required|exists:events,id',
         'event_date' => 'required|date',
         'status' => 'required|string|in:Pending,Confirmed,Completed',
@@ -38,7 +39,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->date,
+        'event_date' => $request->event_date,
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
@@ -61,7 +62,7 @@ public function update(Request $request, $id)
         'customer_id' => 'required|exists:users,id',
         'event_id' => 'required|exists:events,id',
         'event_date' => 'required|date',
-        'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
+        'status' => 'required|string|in:Pending,Confirmed,Completed',
         'note' => 'nullable|string',
         'location' => 'nullable|string',
         'location_url' => 'nullable|url',
@@ -79,7 +80,7 @@ public function update(Request $request, $id)
         'user_id' => $request->customer_id,
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $request->date,
+        'event_date' => $request->event_date,
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
