@@ -23,8 +23,11 @@ protected $fillable = [
 
 // Booking.php
 protected $casts = [
-    'event_date' => 'datetime:Y-m-d\TH:i:s',
+    'event_date' => 'datetime:Y-m-d\TH:i:s.v\Z',
+    'created_at' => 'datetime:Y-m-d\TH:i:s.v\Z',
+    'updated_at' => 'datetime:Y-m-d\TH:i:s.v\Z',
 ];
+
 
 
     public function event()

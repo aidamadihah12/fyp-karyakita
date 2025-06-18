@@ -16,7 +16,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-    $bookings = Booking::with(['event', 'user', 'venue'])
+    $bookings = Booking::with(['event', 'user', 'venue', 'freelancer'])
             ->get()
             ->map(function ($booking) {
                 return $this->formatBooking($booking);
@@ -107,29 +107,28 @@ class BookingController extends Controller
             'assigned_staff_id' => $booking->assigned_staff_id,
             'status' => $booking->status,
             'total_amount' => $booking->total_amount,
-            'event_date' => $booking->event_date,
+            'event_date' => optional($booking->event_date)->toISOString(),
             'location' => $booking->location,
             'location_url' => $booking->location_url,
             'note' => $booking->note,
-            'created_at' => $booking->created_at,
-            'updated_at' => $booking->updated_at,
+            'created_at' => optional($booking->created_at)->toISOString(),
+            'updated_at' => optional($booking->updated_at)->toISOString(),
             'customer' => $booking->user_id,
             'freelancer' => $booking->freelancer_id ?? null,
 
             // Nested Event object
-                'event' => $booking->event ? [
-                'id' => $booking->event->id,
-                'name' => $booking->event->name,
-                'date' => $booking->event->date,
-                'price' => $booking->event->price,
-                'available_slots' => $booking->event->available_slots,
-                'image' => $booking->event->image,
-                'created_at' => $booking->event->created_at,
-                'updated_at' => $booking->event->updated_at,
-                'desc' => $booking->event->desc,
-                'status' => $booking->event->status,
-                'customer_id' => $booking->event->customer_id,
-                'event_date' => $booking->event->event_date,
+               'event' => $booking->event ? [
+            'id' => $booking->event->id,
+            'name' => $booking->event->name,
+            'price' => $booking->event->price,
+            'available_slots' => $booking->event->available_slots,
+            'image' => $booking->event->image,
+            'desc' => $booking->event->desc,
+            'status' => $booking->event->status,
+            'customer_id' => $booking->event->customer_id,
+            'event_date' => optional($booking->event->event_date)->toISOString(),
+            'created_at' => optional($booking->event->created_at)->toISOString(),
+            'updated_at' => optional($booking->event->updated_at)->toISOString(),
             ] : null,
         ];
     }
