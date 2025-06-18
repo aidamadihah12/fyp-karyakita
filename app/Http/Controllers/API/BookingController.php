@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -39,7 +40,7 @@ public function store(Request $request)
     $booking = Booking::create([
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $event->event_date ?? now()->toDateString(),
+        'event_date' => Carbon::parse($request->event_date)->format('Y-m-d'),
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
@@ -80,7 +81,7 @@ public function update(Request $request, $id)
         'user_id' => $request->customer_id,
         'event_id' => $event->id,
         'event_type' => $event->type ?? 'N/A',
-        'event_date' => $event->event_date ?? now()->toDateString(),
+        'event_date' => Carbon::parse($request->event_date)->format('Y-m-d'),
         'note' => $request->note,
         'total_amount' => $event->price,
         'status' => $request->status,
