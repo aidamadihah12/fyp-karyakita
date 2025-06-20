@@ -26,7 +26,6 @@ class BookingController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
-            'venue_id' => 'required|exists:venues,id',
             'event_id' => 'required|exists:events,id',
             'event_date' => 'required|date',
             'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
@@ -41,7 +40,6 @@ class BookingController extends Controller
 
         $booking = Booking::create([
             'user_id' => $validated['user_id'],
-            'venue_id' => $validated['venue_id'],
             'event_id' => $event->id,
             'event_type' => $event->type ?? 'N/A',
             'event_date' => $validated['event_date'],
