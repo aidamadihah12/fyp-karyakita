@@ -21,12 +21,13 @@ protected $fillable = [
     'photographer_id',
 ];
 
-// Booking.php
+
 protected $casts = [
-    'event_date' => 'datetime:Y-m-d\TH:i:s.v\Z',
-    'created_at' => 'datetime:Y-m-d\TH:i:s.v\Z',
-    'updated_at' => 'datetime:Y-m-d\TH:i:s.v\Z',
+    'event_date' => 'datetime',
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
 ];
+
 
 
 
