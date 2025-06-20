@@ -1,14 +1,11 @@
 <?php
 
-// App\Http\Controllers\API\BookingController.php
-
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Event;
-use App\Models\Venue;
 use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Notification;
@@ -18,7 +15,8 @@ class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with(['user', 'event', 'venue', 'photographer'])->get();
+        // Removed 'venue'
+        $bookings = Booking::with(['user', 'event', 'photographer'])->get();
         return response()->json(['success' => true, 'data' => $bookings]);
     }
 
@@ -44,7 +42,7 @@ class BookingController extends Controller
             'event_type' => $event->type ?? 'N/A',
             'event_date' => $validated['event_date'],
             'note' => $validated['note'] ?? null,
-            'total_amount' => $event->price,
+            'total_amount' => $event->price ?? 0,
             'status' => $validated['status'],
             'time' => $validated['time'],
             'location' => $validated['location'] ?? null,
@@ -57,17 +55,18 @@ class BookingController extends Controller
 
     public function show($id)
     {
-        $booking = Booking::with(['user', 'venue', 'event', 'photographer'])->findOrFail($id);
+        // Removed 'venue'
+        $booking = Booking::with(['user', 'event', 'photographer'])->findOrFail($id);
         return response()->json(['success' => true, 'data' => $booking]);
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id', // changed from customer_id
             'event_id' => 'required|exists:events,id',
             'event_date' => 'required|date',
-            'status' => 'required|string|in:Pending,Confirmed,Completed',
+            'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
             'note' => 'nullable|string',
             'location' => 'nullable|string|max:255',
             'location_url' => 'nullable|url|max:255',
@@ -78,12 +77,12 @@ class BookingController extends Controller
         $event = Event::findOrFail($validated['event_id']);
 
         $booking->update([
-            'user_id' => $validated['customer_id'],
+            'user_id' => $validated['user_id'],
             'event_id' => $event->id,
             'event_type' => $event->type ?? 'N/A',
             'event_date' => $validated['event_date'],
             'note' => $validated['note'] ?? null,
-            'total_amount' => $event->price,
+            'total_amount' => $event->price ?? 0,
             'status' => $validated['status'],
             'location' => $validated['location'] ?? null,
             'location_url' => $validated['location_url'] ?? null,
@@ -112,7 +111,7 @@ class BookingController extends Controller
                 'booking_id' => $booking->id,
                 'payment_date' => now(),
                 'payment_method' => 'Online Banking',
-                'amount' => $booking->total_amount,
+                'amount' => $booking->total_amount ?? 0,
                 'status' => 'Successful',
             ]);
         }
