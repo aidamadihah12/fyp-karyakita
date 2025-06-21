@@ -15,9 +15,13 @@ class BookingController extends Controller
 {
     public function index()
     {
-        // Removed 'venue'
         $bookings = Booking::with(['user', 'event', 'photographer'])->get();
-        return response()->json(['success' => true, 'data' => $bookings]);
+
+        $formatted = $bookings->map(function ($booking) {
+            return $this->formatBooking($booking);
+        });
+
+        return response()->json(['success' => true, 'data' => $formatted]);
     }
 
     public function store(Request $request)
@@ -50,20 +54,27 @@ class BookingController extends Controller
             'photographer_id' => $validated['photographer_id'] ?? null,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Booking created successfully.', 'data' => $booking]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking created successfully.',
+            'data' => $this->formatBooking($booking->load(['user', 'event', 'photographer']))
+        ]);
     }
 
     public function show($id)
     {
-        // Removed 'venue'
         $booking = Booking::with(['user', 'event', 'photographer'])->findOrFail($id);
-        return response()->json(['success' => true, 'data' => $booking]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatBooking($booking)
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // changed from customer_id
+            'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
             'event_date' => 'required|date',
             'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
@@ -89,7 +100,11 @@ class BookingController extends Controller
             'photographer_id' => $validated['photographer_id'] ?? null,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Booking updated successfully.', 'data' => $booking]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking updated successfully.',
+            'data' => $this->formatBooking($booking->load(['user', 'event', 'photographer']))
+        ]);
     }
 
     public function destroy($id)
@@ -135,6 +150,30 @@ class BookingController extends Controller
                 ->notify(new AssignmentNotification($booking));
         }
 
-        return response()->json(['success' => true, 'message' => 'Photographer assigned successfully.', 'data' => $booking]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Photographer assigned successfully.',
+            'data' => $this->formatBooking($booking->load(['user', 'event', 'photographer']))
+        ]);
+    }
+
+    private function formatBooking($booking)
+    {
+        return [
+            'id' => $booking->id,
+            'event_type' => $booking->event_type,
+            'status' => $booking->status,
+            'total_amount' => $booking->total_amount,
+            'event_date' => optional($booking->event_date)->format('Y-m-d'),
+            'time' => $booking->time,
+            'location' => $booking->location,
+            'location_url' => $booking->location_url,
+            'note' => $booking->note,
+            'created_at' => optional($booking->created_at)->toIso8601String(),
+            'updated_at' => optional($booking->updated_at)->toIso8601String(),
+            'user' => $booking->user,
+            'event' => $booking->event,
+            'photographer' => $booking->photographer,
+        ];
     }
 }
