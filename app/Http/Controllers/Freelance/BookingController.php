@@ -8,16 +8,16 @@ use App\Models\Booking;
 
 class BookingController extends Controller
 {
-    // Display only the bookings assigned to the logged-in freelance photographer
     public function index()
     {
-        $userId = auth()->id(); // Current logged-in freelancer ID
+        $userId = auth()->id(); // Get current freelance user ID
 
         $bookings = Booking::with(['user', 'event', 'freelancer', 'venue'])
             ->where('freelancer_id', $userId)
             ->latest()
             ->paginate(10);
 
-        return view('freelance.bookings', compact('bookings'));
+        // Update this line to match your actual Blade file
+        return view('freelance.bookings.index', compact('bookings'));
     }
 }
