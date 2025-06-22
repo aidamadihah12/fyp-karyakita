@@ -10,12 +10,18 @@ use App\Models\User;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\AssignmentNotification;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
     public function index()
     {
-        $bookings = Booking::with(['user', 'event', 'photographer'])->get();
+        // Only fetch bookings for the logged-in user
+        $user = Auth::user();
+
+        $bookings = Booking::with(['user', 'event', 'photographer'])
+            ->where('user_id', $user->id)
+            ->get();
 
         $formatted = $bookings->map(function ($booking) {
             return $this->formatBooking($booking);
@@ -27,7 +33,6 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
             'event_date' => 'required|date',
             'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
@@ -41,7 +46,7 @@ class BookingController extends Controller
         $event = Event::findOrFail($validated['event_id']);
 
         $booking = Booking::create([
-            'user_id' => $validated['user_id'],
+            'user_id' => Auth::id(), // Automatically assign to current user
             'event_id' => $event->id,
             'event_type' => $event->type ?? 'N/A',
             'event_date' => $validated['event_date'],
@@ -74,7 +79,6 @@ class BookingController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'event_id' => 'required|exists:events,id',
             'event_date' => 'required|date',
             'status' => 'required|string|in:Pending,Confirmed,Completed,Assigned',
@@ -88,7 +92,6 @@ class BookingController extends Controller
         $event = Event::findOrFail($validated['event_id']);
 
         $booking->update([
-            'user_id' => $validated['user_id'],
             'event_id' => $event->id,
             'event_type' => $event->type ?? 'N/A',
             'event_date' => $validated['event_date'],
