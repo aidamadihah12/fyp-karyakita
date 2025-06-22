@@ -61,7 +61,7 @@ class EventApiController extends Controller
             'location' => 'nullable|string',
             'package_type' => 'nullable|string',
             'customer_id' => 'nullable|exists:users,id',
-            'venue_id' => 'nullable|exists:venues,id' 
+            'venue_id' => 'nullable|exists:venues,id'
         ]);
 
         $event->update($validated);
@@ -81,4 +81,36 @@ class EventApiController extends Controller
 
         return response()->json(['message' => 'Event deleted'], 200);
     }
+
+    private function formatBooking($booking)
+{
+    $event = $booking->event;
+
+    return [
+        'id' => $booking->id,
+        'event_type' => $booking->event_type,
+        'status' => $booking->status,
+        'total_amount' => $booking->total_amount,
+        'event_date' => optional($booking->event_date)->format('Y-m-d'),
+        'time' => $booking->time,
+        'location' => $booking->location,
+        'location_url' => $booking->location_url,
+        'note' => $booking->note,
+        'created_at' => optional($booking->created_at)->toIso8601String(),
+        'updated_at' => optional($booking->updated_at)->toIso8601String(),
+        'user' => $booking->user,
+        'event' => [
+            'id' => $event->id,
+            'name' => $event->name,
+            'price' => $event->price,
+            'desc' => $event->desc,
+            'event_date' => $event->event_date,
+            'image' => $event->image
+                ? asset('storage/' . ltrim($event->image, '/'))
+                : null,
+        ],
+        'photographer' => $booking->photographer,
+    ];
+}
+
 }
