@@ -47,6 +47,7 @@ protected $casts = [
         return $this->belongsTo(User::class, 'freelancer_id');
     }
 
+
 public function venue()
 {
     return $this->belongsTo(Venue::class);
