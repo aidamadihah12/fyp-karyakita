@@ -103,6 +103,7 @@ Route::middleware(['auth', 'role:freelance'])->prefix('freelance')->name('freela
     ->middleware(['auth', 'role:freelance']) // adjust middleware if needed
     ->name('freelance.bookings.manage');
 
+     Route::get('/bookings', [\App\Http\Controllers\Freelance\BookingController::class, 'index'])->name('bookings.index');
     Route::get('/calendar', [FreelanceController::class, 'calendar'])->name('calendar');
 });
 
