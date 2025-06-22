@@ -14,21 +14,20 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function index()
-    {
-        // Only fetch bookings for the logged-in user
-        $user = Auth::user();
+public function index()
+{
+    $userId = Auth::id(); // Get the authenticated user ID
 
-        $bookings = Booking::with(['user', 'event', 'photographer'])
-            ->where('user_id', $user->id)
-            ->get();
+    $bookings = Booking::with(['user', 'event', 'photographer'])
+                ->where('user_id', $userId) // FILTER by authenticated user
+                ->get();
 
-        $formatted = $bookings->map(function ($booking) {
-            return $this->formatBooking($booking);
-        });
+    $formatted = $bookings->map(function ($booking) {
+        return $this->formatBooking($booking);
+    });
 
-        return response()->json(['success' => true, 'data' => $formatted]);
-    }
+    return response()->json(['success' => true, 'data' => $formatted]);
+}
 
     public function store(Request $request)
     {
