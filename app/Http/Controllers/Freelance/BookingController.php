@@ -18,6 +18,6 @@ class BookingController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('freelance.manage-bookings', compact('bookings'));
+        return view('freelance.bookings', compact('bookings'));
     }
 }
