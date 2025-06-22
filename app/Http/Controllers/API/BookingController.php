@@ -17,6 +17,7 @@ class BookingController extends Controller
 public function index()
 {
     $userId = Auth::id(); // Get the authenticated user ID
+     \Log::info('BookingController@index called by USER ID:', ['id' => $userId]);
 
     $bookings = Booking::with(['user', 'event', 'photographer'])
                 ->where('user_id', $userId) // FILTER by authenticated user
